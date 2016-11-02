@@ -1,0 +1,67 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath group: 'com.github.rodm', name: 'gradle-teamcity-plugin', version: '0.9.1'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'com.github.rodm.teamcity-server'
+
+group = 'com.github.grundic'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://repository.jetbrains.com/all"
+    }
+    maven {
+        url "http://download.jetbrains.com/teamcity-repository"
+    }
+    mavenLocal()
+}
+
+ext {
+    teamcityVersion = System.properties['teamcity.version'] ?: '10.0.2'
+    teamcityDir = "${System.properties['user.home']}/.teamcity.d"
+    java8Home = project.hasProperty('java8.home') ? property('java8.home') : '/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home'
+    serverOpts = "-DTC.res.disableAll=true " +
+            "-Dteamcity.development.mode=true " +
+            "-Dteamcity.development.shadowCopyClasses=true " +
+            "-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=50055"
+}
+
+test {
+    useTestNG()
+}
+
+dependencies {
+    compile 'org.jetbrains.teamcity:server-api:10.0.2'
+}
+
+teamcity {
+    version = teamcityVersion
+
+    server {
+        downloadsDir = "${teamcityDir}/_downloads"
+
+        descriptor = file("teamcity-plugin.xml")
+        tokens = [Version: project.version]
+
+        environments {
+            teamcity10 {
+                version = '10.0.2'
+                downloadUrl = "https://download.jetbrains.com/teamcity/TeamCity-10.0.2.tar.gz"
+                homeDir = file("$teamcityDir/TeamCity-${version}")
+                dataDir = file("$teamcityDir/data/${version}")
+                javaHome = file(java8Home)
+                serverOptions = serverOpts
+            }
+        }
+    }
+}

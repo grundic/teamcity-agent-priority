@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<teamcity-plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:schemas-jetbrains-com:teamcity-plugin-v1-xml">
+  <info>
+    <name>teamcity-agent-priority</name>
+    <display-name>Teamcity agent priority</display-name>
+    <version>@Version@</version>
+    <description>Configuration of build agent priorities.</description>
+    <download-url>https://github.com/grundic/teamcity-agent-priority/releases/latest</download-url>
+    <email>systray@yandex.ru</email>
+    <vendor>
+      <name>Grigory Chernyshev</name>
+      <url>https://github.com/grundic</url>
+      <logo>Plugin vendor logo URL</logo>
+    </vendor>
+  </info>
+  <deployment use-separate-classloader="true" />
+</teamcity-plugin>
