@@ -24,6 +24,7 @@
 
 package com.github.grundic.agentPriority.prioritisation;
 
+import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
 import com.github.grundic.agentPriority.config.BaseConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,22 +32,37 @@ import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
+
 /**
  * User: g.chernyshev
  * Date: 02/11/16
  * Time: 21:06
  */
 public class ByName implements AgentPriority<String, ByName.Config> {
+
+    final static String TYPE = "byName";
+
+    public ByName(@NotNull AgentPriorityRegistry registry) {
+        registry.register(this);
+    }
+
     @NotNull
     @Override
     public String getType() {
-        return "byName";
+        return TYPE;
     }
 
     @NotNull
     @Override
     public String getName() {
         return "By name.";
+    }
+
+    @NotNull
+    @Override
+    public String getJspPath() {
+        return String.format("%s/jsp/%s.jsp", PLUGIN_PATH, getType());
     }
 
     @Nullable
@@ -59,12 +75,12 @@ public class ByName implements AgentPriority<String, ByName.Config> {
     }
 
     @XmlRootElement
-    @XmlType(name="byName")
+    @XmlType(name = TYPE)
     public static class Config implements BaseConfig {
+        @NotNull
         @Override
-        public AgentPriority<String, Config> getInstance() {
-            return new ByName();
+        public String getType() {
+            return TYPE;
         }
-
     }
 }

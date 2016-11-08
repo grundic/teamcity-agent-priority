@@ -24,13 +24,14 @@
 
 package com.github.grundic.agentPriority.config;
 
-import com.github.grundic.agentPriority.prioritisation.AgentPriority;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * User: g.chernyshev
  * Date: 08/11/16
  * Time: 18:34
  */
-public interface BaseConfig<T, F extends BaseConfig> {
-    AgentPriority<T, F> getInstance();
+public interface BaseConfig {
+    @NotNull
+    String getType();
 }

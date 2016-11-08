@@ -41,4 +41,6 @@ public interface AgentPriority<T, F extends BaseConfig> extends Function<Priorit
     @NotNull
     String getName();
 
+    @NotNull
+    String getJspPath();
 }

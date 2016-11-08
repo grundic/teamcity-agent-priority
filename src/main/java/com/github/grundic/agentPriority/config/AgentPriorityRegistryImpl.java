@@ -25,11 +25,9 @@
 package com.github.grundic.agentPriority.config;
 
 import com.github.grundic.agentPriority.prioritisation.AgentPriority;
-import jetbrains.buildServer.serverSide.impl.runType.RunTypeWithExtensionsImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,8 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Time: 18:02
  */
 public class AgentPriorityRegistryImpl implements AgentPriorityRegistry {
-
-
     private final Map<String, AgentPriority> agentPriorityMap = new ConcurrentHashMap<>();
 
     @Override
@@ -49,8 +45,14 @@ public class AgentPriorityRegistryImpl implements AgentPriorityRegistry {
         agentPriorityMap.put(agentPriority.getType(), agentPriority);
     }
 
+    @NotNull
     @Override
     public List<? extends AgentPriority> getPriorities() {
         return new ArrayList<>(agentPriorityMap.values());
+    }
+
+    @Override
+    public AgentPriority get(@NotNull String type) {
+        return agentPriorityMap.get(type);
     }
 }

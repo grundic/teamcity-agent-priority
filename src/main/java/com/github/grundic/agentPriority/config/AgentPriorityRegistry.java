@@ -25,8 +25,8 @@
 package com.github.grundic.agentPriority.config;
 
 import com.github.grundic.agentPriority.prioritisation.AgentPriority;
-import jetbrains.buildServer.serverSide.RunType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -39,5 +39,9 @@ public interface AgentPriorityRegistry {
 
     void register(@NotNull AgentPriority agentPriority);
 
+    @NotNull
     List<? extends AgentPriority> getPriorities();
+
+    @Nullable
+    AgentPriority get(@NotNull String type);
 }

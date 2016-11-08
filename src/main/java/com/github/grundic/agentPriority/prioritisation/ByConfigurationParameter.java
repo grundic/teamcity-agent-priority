@@ -24,6 +24,7 @@
 
 package com.github.grundic.agentPriority.prioritisation;
 
+import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
 import com.github.grundic.agentPriority.config.BaseConfig;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,22 +33,36 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
+
 /**
  * User: g.chernyshev
  * Date: 02/11/16
  * Time: 21:07
  */
 public class ByConfigurationParameter implements AgentPriority<String, ByConfigurationParameter.Config> {
+    final static String TYPE = "byConfigurationParameter";
+
+    public ByConfigurationParameter(@NotNull AgentPriorityRegistry registry) {
+        registry.register(this);
+    }
+
     @NotNull
     @Override
     public String getType() {
-        return "byConfigurationParameter";
+        return TYPE;
     }
 
     @NotNull
     @Override
     public String getName() {
         return "By configuration parameter.";
+    }
+
+    @NotNull
+    @Override
+    public String getJspPath() {
+        return String.format("%s/jsp/%s.jsp", PLUGIN_PATH, getType());
     }
 
     @Nullable
@@ -61,8 +76,14 @@ public class ByConfigurationParameter implements AgentPriority<String, ByConfigu
     }
 
     @XmlRootElement
-    @XmlType(name="byConfigurationParameter")
+    @XmlType(name = TYPE)
     public static class Config implements BaseConfig {
+        @NotNull
+        @Override
+        public String getType() {
+            return TYPE;
+        }
+
         @Nullable
         @XmlElement
         private String name; // TODO parameter could be int
@@ -75,11 +96,5 @@ public class ByConfigurationParameter implements AgentPriority<String, ByConfigu
         public void setName(@Nullable String name) {
             this.name = name;
         }
-
-        @Override
-        public AgentPriority<String, Config> getInstance() {
-            return new ByConfigurationParameter();
-        }
-
     }
 }
