@@ -22,23 +22,35 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.prioritisation;
+package com.github.grundic.agentPriority.config;
 
-import com.github.grundic.agentPriority.config.BaseConfig;
-import com.google.common.base.Function;
+import com.github.grundic.agentPriority.prioritisation.AgentPriority;
+import jetbrains.buildServer.serverSide.impl.runType.RunTypeWithExtensionsImpl;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * User: g.chernyshev
- * Date: 02/11/16
- * Time: 21:03
+ * Date: 07/11/16
+ * Time: 18:02
  */
+public class AgentPriorityRegistryImpl implements AgentPriorityRegistry {
 
-public interface AgentPriority<T, F extends BaseConfig> extends Function<PriorityInput<F>, T> {
-    @NotNull
-    String getType();
 
-    @NotNull
-    String getName();
+    private final Map<String, AgentPriority> agentPriorityMap = new ConcurrentHashMap<>();
 
+    @Override
+    public void register(@NotNull AgentPriority agentPriority) {
+        agentPriorityMap.put(agentPriority.getType(), agentPriority);
+    }
+
+    @Override
+    public List<? extends AgentPriority> getPriorities() {
+        return new ArrayList<>(agentPriorityMap.values());
+    }
 }

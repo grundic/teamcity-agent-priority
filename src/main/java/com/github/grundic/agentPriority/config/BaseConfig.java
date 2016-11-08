@@ -22,23 +22,15 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.prioritisation;
+package com.github.grundic.agentPriority.config;
 
-import com.github.grundic.agentPriority.config.BaseConfig;
-import com.google.common.base.Function;
-import org.jetbrains.annotations.NotNull;
+import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 
 /**
  * User: g.chernyshev
- * Date: 02/11/16
- * Time: 21:03
+ * Date: 08/11/16
+ * Time: 18:34
  */
-
-public interface AgentPriority<T, F extends BaseConfig> extends Function<PriorityInput<F>, T> {
-    @NotNull
-    String getType();
-
-    @NotNull
-    String getName();
-
+public interface BaseConfig<T, F extends BaseConfig> {
+    AgentPriority<T, F> getInstance();
 }

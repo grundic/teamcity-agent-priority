@@ -25,61 +25,33 @@
 package com.github.grundic.agentPriority.prioritisation;
 
 import com.github.grundic.agentPriority.config.BaseConfig;
+import jetbrains.buildServer.serverSide.SBuildAgent;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * User: g.chernyshev
- * Date: 02/11/16
- * Time: 21:07
+ * Date: 08/11/16
+ * Time: 18:33
  */
-public class ByConfigurationParameter implements AgentPriority<String, ByConfigurationParameter.Config> {
+class PriorityInput<T extends BaseConfig> {
     @NotNull
-    @Override
-    public String getType() {
-        return "byConfigurationParameter";
-    }
+    private final SBuildAgent buildAgent;
 
     @NotNull
-    @Override
-    public String getName() {
-        return "By configuration parameter.";
+    private final T config;
+
+    public PriorityInput(@NotNull SBuildAgent buildAgent, @NotNull T config) {
+        this.buildAgent = buildAgent;
+        this.config = config;
     }
 
-    @Nullable
-    @Override
-    public String apply(@Nullable PriorityInput<Config> input) {
-        if (null != input) {
-            final String name = input.getConfig().getName();
-            return input.getBuildAgent().getConfigurationParameters().get(name);
-        }
-        return null;
+    @NotNull
+    SBuildAgent getBuildAgent() {
+        return buildAgent;
     }
 
-    @XmlRootElement
-    @XmlType(name="byConfigurationParameter")
-    public static class Config implements BaseConfig {
-        @Nullable
-        @XmlElement
-        private String name; // TODO parameter could be int
-
-        @Nullable
-        String getName() {
-            return name;
-        }
-
-        public void setName(@Nullable String name) {
-            this.name = name;
-        }
-
-        @Override
-        public AgentPriority<String, Config> getInstance() {
-            return new ByConfigurationParameter();
-        }
-
+    @NotNull
+    public T getConfig() {
+        return config;
     }
 }

@@ -22,23 +22,40 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.prioritisation;
+package com.github.grundic.agentPriority.config;
 
-import com.github.grundic.agentPriority.config.BaseConfig;
-import com.google.common.base.Function;
-import org.jetbrains.annotations.NotNull;
+import com.github.grundic.agentPriority.prioritisation.ByConfigurationParameter;
+import com.github.grundic.agentPriority.prioritisation.ByName;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElements;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
  * User: g.chernyshev
- * Date: 02/11/16
- * Time: 21:03
+ * Date: 06/11/16
+ * Time: 17:14
  */
 
-public interface AgentPriority<T, F extends BaseConfig> extends Function<PriorityInput<F>, T> {
-    @NotNull
-    String getType();
+@XmlRootElement()
+class RootConfiguration {
+    RootConfiguration() {
+    }
 
-    @NotNull
-    String getName();
+    private List<BaseConfig> configs;
 
+    @XmlElementWrapper(name = "configs")
+    @XmlElements({
+            @XmlElement(name = "byName", type = ByName.Config.class),
+            @XmlElement(name = "byConfigurationParameter", type = ByConfigurationParameter.Config.class)
+    })
+    List<BaseConfig> getConfigs() {
+        return configs;
+    }
+
+    void setConfigs(List<BaseConfig> configs) {
+        this.configs = configs;
+    }
 }

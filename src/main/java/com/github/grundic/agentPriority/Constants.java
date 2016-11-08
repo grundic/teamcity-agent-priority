@@ -22,23 +22,16 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.prioritisation;
-
-import com.github.grundic.agentPriority.config.BaseConfig;
-import com.google.common.base.Function;
-import org.jetbrains.annotations.NotNull;
+package com.github.grundic.agentPriority;
 
 /**
  * User: g.chernyshev
- * Date: 02/11/16
- * Time: 21:03
+ * Date: 06/11/16
+ * Time: 22:16
  */
-
-public interface AgentPriority<T, F extends BaseConfig> extends Function<PriorityInput<F>, T> {
-    @NotNull
-    String getType();
-
-    @NotNull
-    String getName();
-
+public final class Constants {
+    public final static String PLUGIN_NAME = "teamcity-agent-priority";
+    public final static String PLUGIN_TITLE = "Agent priority";
+    public final static String PLUGIN_PACKAGE = Constants.class.getPackage().getName();
+    public final static String PLUGIN_PATH = PLUGIN_PACKAGE.replace('.', '/');
 }

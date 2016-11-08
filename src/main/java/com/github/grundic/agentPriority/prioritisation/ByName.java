@@ -24,22 +24,47 @@
 
 package com.github.grundic.agentPriority.prioritisation;
 
-import jetbrains.buildServer.serverSide.SBuildAgent;
+import com.github.grundic.agentPriority.config.BaseConfig;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  * User: g.chernyshev
  * Date: 02/11/16
  * Time: 21:06
  */
-public class ByName implements AgentPriority<String> {
+public class ByName implements AgentPriority<String, ByName.Config> {
+    @NotNull
+    @Override
+    public String getType() {
+        return "byName";
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return "By name.";
+    }
+
     @Nullable
     @Override
-    public String apply(@Nullable SBuildAgent buildAgent) {
-        if (null != buildAgent) {
-            return buildAgent.getName();
+    public String apply(@Nullable PriorityInput<Config> input) {
+        if (null != input) {
+            return input.getBuildAgent().getName();
         }
         return null;
+    }
+
+    @XmlRootElement
+    @XmlType(name="byName")
+    public static class Config implements BaseConfig {
+        @Override
+        public AgentPriority<String, Config> getInstance() {
+            return new ByName();
+        }
+
     }
 }

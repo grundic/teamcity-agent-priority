@@ -24,39 +24,20 @@
 
 package com.github.grundic.agentPriority.config;
 
-import com.github.grundic.agentPriority.prioritisation.AgentPriority;
-import com.github.grundic.agentPriority.prioritisation.ByConfigurationParameter;
-import com.github.grundic.agentPriority.prioritisation.ByName;
+import jetbrains.buildServer.serverSide.SProject;
+import org.jetbrains.annotations.NotNull;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.JAXBException;
 import java.util.List;
 
 /**
  * User: g.chernyshev
- * Date: 06/11/16
- * Time: 17:14
+ * Date: 08/11/16
+ * Time: 18:20
  */
+public interface ConfigurationManager {
+    public void save(@NotNull SProject project, @NotNull List<BaseConfig> configs) throws JAXBException;
 
-@XmlRootElement()
-public class AgentPriorityConfiguration {
-    public AgentPriorityConfiguration() {
-    }
-
-    private List<AgentPriority> priorities;
-
-    @XmlElementWrapper(name = "priorities")
-    @XmlElements({
-            @XmlElement(name = "byName", type = ByName.class),
-            @XmlElement(name = "byConfigurationParameter", type = ByConfigurationParameter.class)
-    })
-    public List<AgentPriority> getPriorities() {
-        return priorities;
-    }
-
-    public void setPriorities(List<AgentPriority> priorities) {
-        this.priorities = priorities;
-    }
+    @NotNull
+    public List<BaseConfig> load(@NotNull SProject project) throws JAXBException;
 }

@@ -24,7 +24,6 @@
 
 package com.github.grundic.agentPriority.config;
 
-import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import jetbrains.buildServer.serverSide.SProject;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,10 +36,10 @@ import java.util.List;
 
 /**
  * User: g.chernyshev
- * Date: 06/11/16
- * Time: 15:53
+ * Date: 08/11/16
+ * Time: 18:22
  */
-public class ConfigurationHelper {
+public class ConfigurationManagerImpl implements ConfigurationManager {
 
     @NotNull
     private final static String CONFIG_NAME = "agent-priorities.xml";
@@ -49,20 +48,26 @@ public class ConfigurationHelper {
         return new File(project.getConfigDirectory(), CONFIG_NAME);
     }
 
-    public static void save(@NotNull SProject project, @NotNull AgentPriorityConfiguration configuration) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(AgentPriorityConfiguration.class);
+
+    @Override
+    public void save(@NotNull SProject project, @NotNull List<BaseConfig> configs) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(RootConfiguration.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         // output pretty printed
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+        RootConfiguration configuration = new RootConfiguration();
+        configuration.setConfigs(configs);
+
         jaxbMarshaller.marshal(configuration, getProjectConfig(project));
     }
 
-
     @NotNull
-    public static List<AgentPriority> load(@NotNull SProject project) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(AgentPriorityConfiguration.class);
+    @Override
+    public List<BaseConfig> load(@NotNull SProject project) throws JAXBException {
+        JAXBContext jaxbContext = JAXBContext.newInstance(RootConfiguration.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        AgentPriorityConfiguration configuration = (AgentPriorityConfiguration) jaxbUnmarshaller.unmarshal(getProjectConfig(project));
-        return configuration.getPriorities();
+        RootConfiguration configuration = (RootConfiguration) jaxbUnmarshaller.unmarshal(getProjectConfig(project));
+        return configuration.getConfigs();
     }
 }
