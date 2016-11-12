@@ -38,21 +38,21 @@ import java.util.concurrent.ConcurrentHashMap;
  * Time: 18:02
  */
 public class AgentPriorityRegistryImpl implements AgentPriorityRegistry {
-    private final Map<String, AgentPriority> agentPriorityMap = new ConcurrentHashMap<>();
+    private final Map<String, AgentPriority<? extends Comparable>> agentPriorityMap = new ConcurrentHashMap<>();
 
     @Override
-    public void register(@NotNull AgentPriority agentPriority) {
+    public void register(@NotNull AgentPriority<? extends Comparable> agentPriority) {
         agentPriorityMap.put(agentPriority.getType(), agentPriority);
     }
 
     @NotNull
     @Override
-    public List<? extends AgentPriority> getPriorities() {
+    public List<AgentPriority<? extends Comparable>> getPriorities() {
         return new ArrayList<>(agentPriorityMap.values());
     }
 
     @Override
-    public AgentPriority get(@NotNull String type) {
+    public AgentPriority<? extends Comparable> get(@NotNull String type) {
         return agentPriorityMap.get(type);
     }
 }

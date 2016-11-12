@@ -24,34 +24,62 @@
 
 package com.github.grundic.agentPriority.prioritisation;
 
+import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
 import com.github.grundic.agentPriority.config.BaseConfig;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
+
 /**
  * User: g.chernyshev
- * Date: 08/11/16
- * Time: 18:33
+ * Date: 05/11/16
+ * Time: 22:17
  */
-class PriorityInput<T extends BaseConfig> {
-    @NotNull
-    private final SBuildAgent buildAgent;
+public class ByBuildResult implements AgentPriority<String> {
+    // TODO implement me
+    public final static String TYPE = "byBuildResult";
+
+    public ByBuildResult(@NotNull AgentPriorityRegistry registry) {
+        registry.register(this);
+    }
+
 
     @NotNull
-    private final T config;
-
-    public PriorityInput(@NotNull SBuildAgent buildAgent, @NotNull T config) {
-        this.buildAgent = buildAgent;
-        this.config = config;
+    @Override
+    public String getType() {
+        return TYPE;
     }
 
     @NotNull
-    SBuildAgent getBuildAgent() {
-        return buildAgent;
+    @Override
+    public String getName() {
+        return "By build result.";
     }
 
     @NotNull
-    public T getConfig() {
-        return config;
+    @Override
+    public String getJspPath() {
+        return String.format("%s/jsp/%s.jsp", PLUGIN_PATH, getType());
+    }
+
+    @Nullable
+    @Override
+    public String apply(@Nullable SBuildAgent input) {
+        return null;
+    }
+
+    @XmlRootElement
+    @XmlType(name = TYPE)
+    public static class Config implements BaseConfig {
+        @NotNull
+        @Override
+        public String getType() {
+            return TYPE;
+        }
     }
 }

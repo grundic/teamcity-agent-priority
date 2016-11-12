@@ -24,8 +24,8 @@
 
 package com.github.grundic.agentPriority.prioritisation;
 
-import com.github.grundic.agentPriority.config.BaseConfig;
 import com.google.common.base.Function;
+import jetbrains.buildServer.serverSide.SBuildAgent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
  * Time: 21:03
  */
 
-public interface AgentPriority<T, F extends BaseConfig> extends Function<PriorityInput<F>, T> {
+public interface AgentPriority<F> extends Function<SBuildAgent, F> {
     @NotNull
     String getType();
 

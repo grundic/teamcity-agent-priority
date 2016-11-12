@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
   ~ The MIT License
   ~
   ~ Copyright (c) 2016 Grigory Chernyshev.
@@ -21,22 +20,14 @@
   ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   ~ THE SOFTWARE.
-  -->
+  --%>
+<%@ include file="/include.jsp" %>
+<jsp:useBean id="priorities" scope="request"
+             type="java.util.List<com.github.grundic.agentPriority.prioritisation.AgentPriority >"/>
 
 
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans default-autowire="constructor">
-    <!--suppress SpringBeanConstructorArgInspection -->
-    <bean class="com.github.grundic.agentPriority.PriorityAgentsFilter"/>
+<h1>Hello from plugin agent priority!</h1>
 
-    <bean class="com.github.grundic.agentPriority.config.ConfigurationManagerImpl"/>
-
-    <bean class="com.github.grundic.agentPriority.config.AgentPriorityRegistryImpl"/>
-    <bean class="com.github.grundic.agentPriority.prioritisation.ByBuildResult"/>
-    <bean class="com.github.grundic.agentPriority.prioritisation.ByConfigurationParameter"/>
-    <bean class="com.github.grundic.agentPriority.prioritisation.ByName"/>
-
-
-    <!--suppress SpringBeanConstructorArgInspection -->
-    <bean class="com.github.grundic.agentPriority.controllers.AgentPriorityProjectConfigurationTab"/>
-</beans>
+<c:forEach var="priority" items="${priorities}">
+    ${priority.name}
+</c:forEach>

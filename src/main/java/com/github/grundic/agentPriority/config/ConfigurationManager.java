@@ -40,4 +40,7 @@ public interface ConfigurationManager {
 
     @NotNull
     public List<BaseConfig> load(@NotNull SProject project) throws JAXBException;
+
+    @NotNull
+    public BaseConfig load(@NotNull SProject project, @NotNull String type) throws JAXBException;
 }

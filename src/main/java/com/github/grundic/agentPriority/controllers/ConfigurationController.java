@@ -22,42 +22,33 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.config;
+package com.github.grundic.agentPriority.controllers;
 
-import com.github.grundic.agentPriority.prioritisation.ByBuildResult;
-import com.github.grundic.agentPriority.prioritisation.ByConfigurationParameter;
-import com.github.grundic.agentPriority.prioritisation.ByName;
+import jetbrains.buildServer.controllers.BaseController;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * User: g.chernyshev
- * Date: 06/11/16
- * Time: 17:14
+ * Date: 07/11/16
+ * Time: 23:37
  */
-
-@XmlRootElement()
-class RootConfiguration {
-    RootConfiguration() {
+@Controller
+public class ConfigurationController extends BaseController {
+    @RequestMapping("/report")
+    public String generateReportForView() {
+        return "hello, teamcity!";
     }
 
-    private List<BaseConfig> configs;
-
-    @XmlElementWrapper(name = "configs")
-    @XmlElements({
-            @XmlElement(name = ByName.TYPE, type = ByName.Config.class),
-            @XmlElement(name = ByConfigurationParameter.TYPE, type = ByConfigurationParameter.Config.class),
-            @XmlElement(name = ByBuildResult.TYPE, type = ByBuildResult.Config.class)
-    })
-    List<BaseConfig> getConfigs() {
-        return configs;
-    }
-
-    void setConfigs(List<BaseConfig> configs) {
-        this.configs = configs;
+    @Nullable
+    @Override
+    protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
+        return null;
     }
 }

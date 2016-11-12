@@ -26,6 +26,7 @@ package com.github.grundic.agentPriority.prioritisation;
 
 import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
 import com.github.grundic.agentPriority.config.BaseConfig;
+import jetbrains.buildServer.serverSide.SBuildAgent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -40,8 +41,8 @@ import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
  * Date: 02/11/16
  * Time: 21:07
  */
-public class ByConfigurationParameter implements AgentPriority<String, ByConfigurationParameter.Config> {
-    final static String TYPE = "byConfigurationParameter";
+public class ByConfigurationParameter implements AgentPriority<String> {
+    public final static String TYPE = "byConfigurationParameter";
 
     public ByConfigurationParameter(@NotNull AgentPriorityRegistry registry) {
         registry.register(this);
@@ -67,11 +68,15 @@ public class ByConfigurationParameter implements AgentPriority<String, ByConfigu
 
     @Nullable
     @Override
-    public String apply(@Nullable PriorityInput<Config> input) {
-        if (null != input) {
-            final String name = input.getConfig().getName();
-            return input.getBuildAgent().getConfigurationParameters().get(name);
+    public String apply(@Nullable SBuildAgent buildAgent) {
+        if (null == buildAgent) {
+            return null;
         }
+        // TODO: add reading of parameter from config.
+//        if (null != input) {
+//            final String name = input.getConfig().getName();
+//            return input.getBuildAgent().getConfigurationParameters().get(name);
+//        }
         return null;
     }
 

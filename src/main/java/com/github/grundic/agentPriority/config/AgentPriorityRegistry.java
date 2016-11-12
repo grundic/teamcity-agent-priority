@@ -37,11 +37,11 @@ import java.util.List;
  */
 public interface AgentPriorityRegistry {
 
-    void register(@NotNull AgentPriority agentPriority);
+    void register(@NotNull AgentPriority<? extends Comparable> agentPriority);
 
     @NotNull
-    List<? extends AgentPriority> getPriorities();
+    List<? extends AgentPriority<? extends Comparable>> getPriorities();
 
     @Nullable
-    AgentPriority get(@NotNull String type);
+    AgentPriority<? extends Comparable> get(@NotNull String type);
 }

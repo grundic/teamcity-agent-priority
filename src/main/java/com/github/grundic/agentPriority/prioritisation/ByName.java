@@ -26,6 +26,7 @@ package com.github.grundic.agentPriority.prioritisation;
 
 import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
 import com.github.grundic.agentPriority.config.BaseConfig;
+import jetbrains.buildServer.serverSide.SBuildAgent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -39,9 +40,9 @@ import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
  * Date: 02/11/16
  * Time: 21:06
  */
-public class ByName implements AgentPriority<String, ByName.Config> {
+public class ByName implements AgentPriority<String> {
 
-    final static String TYPE = "byName";
+    final public static String TYPE = "byName";
 
     public ByName(@NotNull AgentPriorityRegistry registry) {
         registry.register(this);
@@ -67,11 +68,12 @@ public class ByName implements AgentPriority<String, ByName.Config> {
 
     @Nullable
     @Override
-    public String apply(@Nullable PriorityInput<Config> input) {
-        if (null != input) {
-            return input.getBuildAgent().getName();
+    public String apply(@Nullable SBuildAgent buildAgent) {
+        if (null == buildAgent) {
+            return null;
         }
-        return null;
+
+        return buildAgent.getName();
     }
 
     @XmlRootElement

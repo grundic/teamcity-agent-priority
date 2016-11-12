@@ -24,10 +24,22 @@
 
 package com.github.grundic.agentPriority;
 
+import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
+import com.github.grundic.agentPriority.config.BaseConfig;
+import com.github.grundic.agentPriority.config.ConfigurationManager;
+import com.github.grundic.agentPriority.prioritisation.AgentPriority;
+import com.google.common.collect.Ordering;
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SBuildAgent;
+import jetbrains.buildServer.serverSide.SBuildType;
+import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterContext;
 import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterResult;
 import jetbrains.buildServer.serverSide.buildDistribution.StartingBuildAgentsFilter;
 import org.jetbrains.annotations.NotNull;
+
+import javax.xml.bind.JAXBException;
+import java.util.List;
 
 /**
  * User: g.chernyshev
@@ -35,9 +47,56 @@ import org.jetbrains.annotations.NotNull;
  * Time: 16:00
  */
 public class PriorityAgentsFilter implements StartingBuildAgentsFilter {
+
+    @NotNull
+    private final AgentPriorityRegistry registry;
+    @NotNull
+    private final ConfigurationManager configurationManager;
+    @NotNull
+    private final ProjectManager projectManager;
+
+    public PriorityAgentsFilter(
+            @NotNull AgentPriorityRegistry registry,
+            @NotNull ConfigurationManager configurationManager,
+            @NotNull ProjectManager projectManager
+    ) {
+        this.registry = registry;
+        this.configurationManager = configurationManager;
+        this.projectManager = projectManager;
+    }
+
     @NotNull
     @Override
     public AgentsFilterResult filterAgents(@NotNull AgentsFilterContext context) {
-        return new AgentsFilterResult();
+
+        SBuildType buildType = projectManager.findBuildTypeById(context.getStartingBuild().getBuildConfiguration().getId());
+        if (null == buildType) {
+            // TODO add logging here.
+            return new AgentsFilterResult();
+        }
+
+        SProject project = buildType.getProject();
+        Ordering<SBuildAgent> agentOrdering = Ordering.natural().nullsFirst();
+
+        try {
+            List<BaseConfig> configs = configurationManager.load(project);
+            for (BaseConfig config : configs) {
+                AgentPriority<? extends Comparable> agentPriority = registry.get(config.getType());
+                if (null == agentPriority) {
+                    // TODO add logging here.
+                    continue;
+                }
+
+                agentOrdering = agentOrdering.compound(Ordering.natural().nullsFirst().onResultOf(agentPriority));
+            }
+        } catch (JAXBException e) {
+            e.printStackTrace();
+
+            return new AgentsFilterResult();
+        }
+
+        final AgentsFilterResult result = new AgentsFilterResult();
+        result.setFilteredConnectedAgents(agentOrdering.sortedCopy(context.getAgentsForStartingBuild()));
+        return result;
     }
 }

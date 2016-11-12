@@ -34,6 +34,8 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.List;
 
+import static com.github.grundic.agentPriority.Constants.PLUGIN_NAME;
+
 /**
  * User: g.chernyshev
  * Date: 08/11/16
@@ -45,7 +47,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private final static String CONFIG_NAME = "agent-priorities.xml";
 
     private static File getProjectConfig(@NotNull SProject project) {
-        return new File(project.getConfigDirectory(), CONFIG_NAME);
+        return new File(project.getPluginDataDirectory(PLUGIN_NAME), CONFIG_NAME);
     }
 
 
@@ -69,5 +71,12 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         RootConfiguration configuration = (RootConfiguration) jaxbUnmarshaller.unmarshal(getProjectConfig(project));
         return configuration.getConfigs();
+    }
+
+    @NotNull
+    @Override
+    public BaseConfig load(@NotNull SProject project, @NotNull String type) throws JAXBException {
+        // TODO implement me please!
+        return null;
     }
 }

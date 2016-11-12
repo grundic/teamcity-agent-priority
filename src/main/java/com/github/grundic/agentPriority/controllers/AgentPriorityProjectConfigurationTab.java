@@ -22,42 +22,39 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.config;
+package com.github.grundic.agentPriority.controllers;
 
-import com.github.grundic.agentPriority.prioritisation.ByBuildResult;
-import com.github.grundic.agentPriority.prioritisation.ByConfigurationParameter;
-import com.github.grundic.agentPriority.prioritisation.ByName;
+import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
+import jetbrains.buildServer.web.openapi.PagePlaces;
+import jetbrains.buildServer.web.openapi.PlaceId;
+import jetbrains.buildServer.web.openapi.SimpleCustomTab;
+import org.jetbrains.annotations.NotNull;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.Map;
+
+import static com.github.grundic.agentPriority.Constants.*;
 
 /**
  * User: g.chernyshev
  * Date: 06/11/16
- * Time: 17:14
+ * Time: 21:57
  */
+public class AgentPriorityProjectConfigurationTab extends SimpleCustomTab {
 
-@XmlRootElement()
-class RootConfiguration {
-    RootConfiguration() {
+    @NotNull
+    private final AgentPriorityRegistry registry;
+
+    protected AgentPriorityProjectConfigurationTab(@NotNull PagePlaces pagePlaces, @NotNull AgentPriorityRegistry registry) {
+        super(pagePlaces, PlaceId.EDIT_PROJECT_PAGE_TAB, PLUGIN_NAME, PLUGIN_PATH + "/jsp/projectTab.jsp", PLUGIN_TITLE);
+        this.registry = registry;
+        register();
     }
 
-    private List<BaseConfig> configs;
-
-    @XmlElementWrapper(name = "configs")
-    @XmlElements({
-            @XmlElement(name = ByName.TYPE, type = ByName.Config.class),
-            @XmlElement(name = ByConfigurationParameter.TYPE, type = ByConfigurationParameter.Config.class),
-            @XmlElement(name = ByBuildResult.TYPE, type = ByBuildResult.Config.class)
-    })
-    List<BaseConfig> getConfigs() {
-        return configs;
-    }
-
-    void setConfigs(List<BaseConfig> configs) {
-        this.configs = configs;
+    @Override
+    public void fillModel(@NotNull Map<String, Object> model, @NotNull HttpServletRequest request) {
+        super.fillModel(model, request);
+        model.put("priorities", registry.getPriorities());
     }
 }
