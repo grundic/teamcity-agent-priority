@@ -53,7 +53,7 @@
                     <label>Priority type: </label>
                 </td>
                 <td>
-          <span id="PriorityType">
+          <span id="priorityType">
             <forms:select name="typeSelector" enableFilter="true" onchange="BS.AgentPriorityDialog.priorityChanged(this)" className="longField" style="width:28em">
                 <option value="">-- Select a priority type --</option>
                 <c:forEach items="${availablePriorities}" var="priority">
@@ -67,7 +67,7 @@
             </tr>
         </table>
 
-        <div id="PriorityParams"></div>
+        <div id="priorityParams"></div>
 
         <span class="error" id="error_priorityType"></span>
 

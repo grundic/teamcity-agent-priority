@@ -34,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static com.github.grundic.agentPriority.Constants.FEATURE_TYPE;
@@ -53,8 +54,10 @@ public class AgentPriorityManager {
     }
 
     @NotNull
-    public Collection<AgentPriority> list() {
-        return extensionsProvider.getExtensions(AgentPriority.class);
+    public List<AgentPriority> list() {
+        List<AgentPriority> priorities = new ArrayList<>(extensionsProvider.getExtensions(AgentPriority.class));
+        Collections.sort(priorities);
+        return priorities;
     }
 
     @Nullable
@@ -81,5 +84,10 @@ public class AgentPriorityManager {
         }
 
         return priorityDescriptors;
+    }
+
+    @Nullable
+    public AgentPriorityDescriptor findPriorityById(@NotNull SProject project, @NotNull String connectionId) {
+        return null;
     }
 }

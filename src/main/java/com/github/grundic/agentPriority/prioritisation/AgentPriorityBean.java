@@ -22,47 +22,50 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.prioritisation.impl;
+package com.github.grundic.agentPriority.prioritisation;
 
-import com.github.grundic.agentPriority.prioritisation.AgentPriority;
-import jetbrains.buildServer.serverSide.SBuildAgent;
+import jetbrains.buildServer.controllers.BasePropertiesBean;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: g.chernyshev
- * Date: 02/11/16
- * Time: 21:07
+ * Date: 13/11/16
+ * Time: 18:12
  */
-public class ByConfigurationParameter extends AgentPriority {
-    public final static String TYPE = "byConfigurationParameter";
+public class AgentPriorityBean extends BasePropertiesBean {
 
-    @NotNull
-    @Override
-    public String getType() {
-        return TYPE;
+    @Nullable
+    private String priorityId;
+    @Nullable
+    private String priorityType;
+
+    public AgentPriorityBean() {
+        super(new HashMap<>(), new HashMap<>());
     }
 
-    @NotNull
-    @Override
-    public String getName() {
-        return "By configuration parameter";
+    public AgentPriorityBean(@NotNull Map<String, String> properties, @NotNull Map<String, String> defaultProperties) {
+        super(properties, defaultProperties);
     }
 
     @Nullable
-    @Override
-    public String apply(@Nullable SBuildAgent buildAgent) {
-        if (null == buildAgent) {
-            return null;
-        }
-        // TODO: add reading of parameter from config.
-//        if (null != input) {
-//            final String name = input.getConfig().getName();
-//            return input.getBuildAgent().getConfigurationParameters().get(name);
-//        }
-        return null;
+    public String getPriorityId() {
+        return priorityId;
+    }
+
+    public void setPriorityId(@NotNull String priorityId) {
+        this.priorityId = priorityId;
+    }
+
+    @Nullable
+    public String getPriorityType() {
+        return priorityType;
+    }
+
+    public void setPriorityType(@Nullable String priorityType) {
+        this.priorityType = priorityType;
     }
 }

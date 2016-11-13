@@ -24,31 +24,93 @@
 
 package com.github.grundic.agentPriority.controllers;
 
+import com.github.grundic.agentPriority.manager.AgentPriorityManager;
+import com.github.grundic.agentPriority.prioritisation.AgentPriority;
+import com.github.grundic.agentPriority.prioritisation.AgentPriorityBean;
+import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
 import jetbrains.buildServer.controllers.BaseController;
+import jetbrains.buildServer.controllers.SimpleView;
+import jetbrains.buildServer.serverSide.ProjectManager;
+import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.util.StringUtil;
+import jetbrains.buildServer.web.openapi.PluginDescriptor;
+import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+
+import static com.github.grundic.agentPriority.Constants.PLUGIN_NAME;
+import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
 
 /**
  * User: g.chernyshev
  * Date: 07/11/16
  * Time: 23:37
  */
-@Controller
+
 public class ConfigurationController extends BaseController {
-    @RequestMapping("/report")
-    public String generateReportForView() {
-        return "hello, teamcity!";
+    @NotNull
+    private final ProjectManager projectManager;
+    @NotNull
+    private final AgentPriorityManager priorityManager;
+    @NotNull
+    private final PluginDescriptor pluginDescriptor;
+
+    public ConfigurationController(
+            @NotNull ProjectManager projectManager,
+            @NotNull AgentPriorityManager priorityManager,
+            @NotNull WebControllerManager controllerManager,
+            @NotNull PluginDescriptor pluginDescriptor) {
+        this.projectManager = projectManager;
+        this.priorityManager = priorityManager;
+        this.pluginDescriptor = pluginDescriptor;
+
+        controllerManager.registerController("/admin/" + PLUGIN_NAME + "/configuration.html", this);
     }
 
     @Nullable
     @Override
     protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
-        return null;
+        final String priorityId = request.getParameter("priorityId");
+        final String priorityType = request.getParameter("priorityType");
+        SProject project = projectManager.findProjectByExternalId(request.getParameter("projectId"));
+
+        if (project == null) {
+            return SimpleView.createTextView("Project not found");
+        }
+
+        AgentPriorityBean priorityBean;
+        AgentPriority agentPriority;
+
+        if (StringUtil.isEmpty(priorityId)) {
+            agentPriority = priorityManager.getPriorityByType(priorityType);
+            if (null != agentPriority) {
+                Map<String, String> defaultProperties = agentPriority.getDefaultProperties();
+                priorityBean = new AgentPriorityBean(defaultProperties, defaultProperties);
+            } else {
+                return SimpleView.createTextView("Could not find agent priority of type: " + priorityType);
+            }
+        } else {
+            AgentPriorityDescriptor priorityDescriptor = priorityManager.findPriorityById(project, priorityId);
+            if (null == priorityDescriptor) {
+                return SimpleView.createTextView(String.format("Agent priority with given id '%s' not found!", priorityId));
+            }
+            agentPriority = priorityDescriptor.getAgentPriority();
+            priorityBean = new AgentPriorityBean(priorityDescriptor.getParameters(), agentPriority.getDefaultProperties());
+        }
+
+        priorityBean.setPriorityId(priorityId);
+        priorityBean.setPriorityType(priorityType);
+
+        String jspPath = pluginDescriptor.getPluginResourcesPath(PLUGIN_PATH + "/jsp/priorityConfiguration.jsp");
+        ModelAndView mv = new ModelAndView(jspPath);
+        mv.getModel().put("priorityBean", priorityBean);
+        mv.getModel().put("agentPriority", agentPriority);
+        mv.getModel().put("project", project);
+        return mv;
     }
 }

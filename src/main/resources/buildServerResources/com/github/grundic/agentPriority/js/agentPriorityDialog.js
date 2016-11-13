@@ -25,19 +25,19 @@
 'use strict';
 
 BS.AgentPriorityDialog = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.AbstractModalDialog, {
-    getContainer: function() {
+    getContainer: function () {
         return $('AgentPriorityDialog');
     },
 
-    formElement: function() {
+    formElement: function () {
         return $('AgentPriority');
     },
 
-    savingIndicator: function() {
+    savingIndicator: function () {
         return $('saveProgress');
     },
 
-    showAddDialog: function(type) {
+    showAddDialog: function (type) {
         this.enable();
         $j('#AgentPriorityTitle').text('Add agent priority');
         $j('#priorityType').show();
@@ -49,12 +49,29 @@ BS.AgentPriorityDialog = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.Abstrac
         this.showCentered();
     },
 
-    priorityChanged: function(selector) {
+    priorityChanged: function (selector) {
         this.formElement().priorityType.value = '';
-        $j('#connectionParams').html('');
+        $j('#priorityParams').html('');
         if (selector.selectedIndex > 0) {
             this.formElement().priorityType.value = selector.options[selector.selectedIndex].value;
-            // this.loadParameters();
+            this.loadParameters();
         }
+    },
+
+    loadParameters: function (readOnly) {
+        $('parametersProgress').show();
+        var that = this;
+        BS.ajaxUpdater('priorityParams', window['base_uri'] + '/admin/teamcity-agent-priority/configuration.html', {
+            parameters: 'priorityType=' + this.formElement().priorityType.value + "&projectId=" + this.formElement().projectId.value + "&priorityId=" + this.formElement().priorityId.value,
+            evalScripts: true,
+            onComplete: function () {
+                $('parametersProgress').hide();
+
+                if (readOnly) {
+                    that.disable();
+                }
+                that.recenterDialog();
+            }
+        });
     }
 }));

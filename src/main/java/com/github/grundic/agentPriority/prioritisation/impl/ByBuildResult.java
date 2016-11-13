@@ -37,7 +37,7 @@ import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
  * Date: 05/11/16
  * Time: 22:17
  */
-public class ByBuildResult implements AgentPriority {
+public class ByBuildResult extends AgentPriority {
     // TODO implement me
     public final static String TYPE = "byBuildResult";
 
@@ -51,12 +51,6 @@ public class ByBuildResult implements AgentPriority {
     @Override
     public String getName() {
         return "By build result";
-    }
-
-    @NotNull
-    @Override
-    public String getJspPath() {
-        return String.format("%s/jsp/%s.jsp", PLUGIN_PATH, getType());
     }
 
     @Nullable

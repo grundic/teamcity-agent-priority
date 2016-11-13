@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
   ~ The MIT License
   ~
   ~ Copyright (c) 2016 Grigory Chernyshev.
@@ -21,23 +20,11 @@
   ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   ~ THE SOFTWARE.
-  -->
+  --%>
+<jsp:useBean id="project" type="jetbrains.buildServer.serverSide.SProject" scope="request"/>
+<jsp:useBean id="priorityBean" type="com.github.grundic.agentPriority.prioritisation.AgentPriorityBean" scope="request"/>
+<jsp:useBean id="agentPriority" type="com.github.grundic.agentPriority.prioritisation.AgentPriority" scope="request"/>
 
-
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<!--suppress SpringBeanConstructorArgInspection -->
-<beans default-autowire="constructor">
-
-    <bean class="com.github.grundic.agentPriority.buildDistribution.PriorityAgentsFilter"/>
-    <bean class="com.github.grundic.agentPriority.manager.AgentPriorityManager"/>
-
-    <!--Agent priority implementations  -->
-    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByBuildResult"/>
-    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByConfigurationParameter"/>
-    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByName"/>
-
-    <!--Controllers-->
-
-    <bean class="com.github.grundic.agentPriority.controllers.AgentPriorityProjectConfigurationTab"/>
-    <bean class="com.github.grundic.agentPriority.controllers.ConfigurationController"/>
-</beans>
+<table class="runnerFormTable" style="width: 99%;">
+    <jsp:include page="${agentPriority.jspPath}"/>
+</table>

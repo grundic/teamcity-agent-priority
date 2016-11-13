@@ -29,19 +29,34 @@ import jetbrains.buildServer.serverSide.SBuildAgent;
 import jetbrains.buildServer.serverSide.ServerExtension;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * User: g.chernyshev
  * Date: 02/11/16
  * Time: 21:03
  */
 
-public interface AgentPriority extends Function<SBuildAgent, Comparable>, ServerExtension {
+public abstract class AgentPriority implements Function<SBuildAgent, Comparable>, ServerExtension, Comparable<AgentPriority> {
     @NotNull
-    String getType();
+    public abstract String getType();
 
     @NotNull
-    String getName();
+    public abstract String getName();
 
     @NotNull
-    String getJspPath();
+    public String getJspPath() {
+        return String.format("priority/%s.jsp", getType());
+    }
+
+    @NotNull
+    public Map<String, String> getDefaultProperties() {
+        return new HashMap<>();
+    }
+
+    @Override
+    public int compareTo(@NotNull AgentPriority agentPriority) {
+        return this.getType().compareTo(agentPriority.getType());
+    }
 }

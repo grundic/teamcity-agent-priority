@@ -30,14 +30,12 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
-
 /**
  * User: g.chernyshev
  * Date: 02/11/16
  * Time: 21:06
  */
-public class ByName implements AgentPriority {
+public class ByName extends AgentPriority {
 
     final public static String TYPE = "byName";
 
@@ -51,12 +49,6 @@ public class ByName implements AgentPriority {
     @Override
     public String getName() {
         return "By name";
-    }
-
-    @NotNull
-    @Override
-    public String getJspPath() {
-        return String.format("%s/jsp/%s.jsp", PLUGIN_PATH, getType());
     }
 
     @Nullable
