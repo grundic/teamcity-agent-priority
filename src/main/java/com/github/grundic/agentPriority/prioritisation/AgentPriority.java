@@ -26,6 +26,7 @@ package com.github.grundic.agentPriority.prioritisation;
 
 import com.google.common.base.Function;
 import jetbrains.buildServer.serverSide.SBuildAgent;
+import jetbrains.buildServer.serverSide.ServerExtension;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
  * Time: 21:03
  */
 
-public interface AgentPriority<F> extends Function<SBuildAgent, F> {
+public interface AgentPriority extends Function<SBuildAgent, Comparable>, ServerExtension {
     @NotNull
     String getType();
 

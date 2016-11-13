@@ -22,16 +22,13 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.prioritisation;
+package com.github.grundic.agentPriority.prioritisation.impl;
 
-import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
-import com.github.grundic.agentPriority.config.BaseConfig;
+import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
 
@@ -40,14 +37,9 @@ import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
  * Date: 05/11/16
  * Time: 22:17
  */
-public class ByBuildResult implements AgentPriority<String> {
+public class ByBuildResult implements AgentPriority {
     // TODO implement me
     public final static String TYPE = "byBuildResult";
-
-    public ByBuildResult(@NotNull AgentPriorityRegistry registry) {
-        registry.register(this);
-    }
-
 
     @NotNull
     @Override
@@ -58,7 +50,7 @@ public class ByBuildResult implements AgentPriority<String> {
     @NotNull
     @Override
     public String getName() {
-        return "By build result.";
+        return "By build result";
     }
 
     @NotNull
@@ -71,15 +63,5 @@ public class ByBuildResult implements AgentPriority<String> {
     @Override
     public String apply(@Nullable SBuildAgent input) {
         return null;
-    }
-
-    @XmlRootElement
-    @XmlType(name = TYPE)
-    public static class Config implements BaseConfig {
-        @NotNull
-        @Override
-        public String getType() {
-            return TYPE;
-        }
     }
 }

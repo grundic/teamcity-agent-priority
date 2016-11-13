@@ -22,42 +22,50 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.config;
+package com.github.grundic.agentPriority.prioritisation.impl;
 
-import com.github.grundic.agentPriority.prioritisation.ByBuildResult;
-import com.github.grundic.agentPriority.prioritisation.ByConfigurationParameter;
-import com.github.grundic.agentPriority.prioritisation.ByName;
+import com.github.grundic.agentPriority.prioritisation.AgentPriority;
+import jetbrains.buildServer.serverSide.SBuildAgent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+import javax.annotation.Nullable;
+
+import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
 
 /**
  * User: g.chernyshev
- * Date: 06/11/16
- * Time: 17:14
+ * Date: 02/11/16
+ * Time: 21:06
  */
+public class ByName implements AgentPriority {
 
-@XmlRootElement()
-class RootConfiguration {
-    RootConfiguration() {
+    final public static String TYPE = "byName";
+
+    @NotNull
+    @Override
+    public String getType() {
+        return TYPE;
     }
 
-    private List<BaseConfig> configs;
-
-    @XmlElementWrapper(name = "configs")
-    @XmlElements({
-            @XmlElement(name = ByName.TYPE, type = ByName.Config.class),
-            @XmlElement(name = ByConfigurationParameter.TYPE, type = ByConfigurationParameter.Config.class),
-            @XmlElement(name = ByBuildResult.TYPE, type = ByBuildResult.Config.class)
-    })
-    List<BaseConfig> getConfigs() {
-        return configs;
+    @NotNull
+    @Override
+    public String getName() {
+        return "By name";
     }
 
-    void setConfigs(List<BaseConfig> configs) {
-        this.configs = configs;
+    @NotNull
+    @Override
+    public String getJspPath() {
+        return String.format("%s/jsp/%s.jsp", PLUGIN_PATH, getType());
+    }
+
+    @Nullable
+    @Override
+    public String apply(@Nullable SBuildAgent buildAgent) {
+        if (null == buildAgent) {
+            return null;
+        }
+
+        return buildAgent.getName();
     }
 }

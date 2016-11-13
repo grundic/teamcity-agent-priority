@@ -22,12 +22,10 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority;
+package com.github.grundic.agentPriority.buildDistribution;
 
-import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
-import com.github.grundic.agentPriority.config.BaseConfig;
-import com.github.grundic.agentPriority.config.ConfigurationManager;
-import com.github.grundic.agentPriority.prioritisation.AgentPriority;
+import com.github.grundic.agentPriority.manager.AgentPriorityManager;
+import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
 import com.google.common.collect.Ordering;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildAgent;
@@ -38,9 +36,6 @@ import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterResult;
 import jetbrains.buildServer.serverSide.buildDistribution.StartingBuildAgentsFilter;
 import org.jetbrains.annotations.NotNull;
 
-import javax.xml.bind.JAXBException;
-import java.util.List;
-
 /**
  * User: g.chernyshev
  * Date: 02/11/16
@@ -49,19 +44,16 @@ import java.util.List;
 public class PriorityAgentsFilter implements StartingBuildAgentsFilter {
 
     @NotNull
-    private final AgentPriorityRegistry registry;
-    @NotNull
-    private final ConfigurationManager configurationManager;
+    private final AgentPriorityManager priorityManager;
     @NotNull
     private final ProjectManager projectManager;
 
     public PriorityAgentsFilter(
-            @NotNull AgentPriorityRegistry registry,
-            @NotNull ConfigurationManager configurationManager,
+            @NotNull AgentPriorityManager priorityManager,
             @NotNull ProjectManager projectManager
     ) {
-        this.registry = registry;
-        this.configurationManager = configurationManager;
+        this.priorityManager = priorityManager;
+
         this.projectManager = projectManager;
     }
 
@@ -78,21 +70,8 @@ public class PriorityAgentsFilter implements StartingBuildAgentsFilter {
         SProject project = buildType.getProject();
         Ordering<SBuildAgent> agentOrdering = Ordering.natural().nullsFirst();
 
-        try {
-            List<BaseConfig> configs = configurationManager.load(project);
-            for (BaseConfig config : configs) {
-                AgentPriority<? extends Comparable> agentPriority = registry.get(config.getType());
-                if (null == agentPriority) {
-                    // TODO add logging here.
-                    continue;
-                }
-
-                agentOrdering = agentOrdering.compound(Ordering.natural().nullsFirst().onResultOf(agentPriority));
-            }
-        } catch (JAXBException e) {
-            e.printStackTrace();
-
-            return new AgentsFilterResult();
+        for (AgentPriorityDescriptor priorityDescriptor : priorityManager.configured(project)) {
+            agentOrdering = agentOrdering.compound(Ordering.natural().nullsFirst().onResultOf(priorityDescriptor.getAgentPriority()));
         }
 
         final AgentsFilterResult result = new AgentsFilterResult();

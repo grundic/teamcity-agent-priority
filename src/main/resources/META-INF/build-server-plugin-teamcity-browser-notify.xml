@@ -27,14 +27,13 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans default-autowire="constructor">
     <!--suppress SpringBeanConstructorArgInspection -->
-    <bean class="com.github.grundic.agentPriority.PriorityAgentsFilter"/>
+    <bean class="com.github.grundic.agentPriority.buildDistribution.PriorityAgentsFilter"/>
+    <!--suppress SpringBeanConstructorArgInspection -->
+    <bean class="com.github.grundic.agentPriority.manager.AgentPriorityManager"/>
 
-    <bean class="com.github.grundic.agentPriority.config.ConfigurationManagerImpl"/>
-
-    <bean class="com.github.grundic.agentPriority.config.AgentPriorityRegistryImpl"/>
-    <bean class="com.github.grundic.agentPriority.prioritisation.ByBuildResult"/>
-    <bean class="com.github.grundic.agentPriority.prioritisation.ByConfigurationParameter"/>
-    <bean class="com.github.grundic.agentPriority.prioritisation.ByName"/>
+    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByBuildResult"/>
+    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByConfigurationParameter"/>
+    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByName"/>
 
 
     <!--suppress SpringBeanConstructorArgInspection -->

@@ -22,31 +22,23 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority.prioritisation;
+package com.github.grundic.agentPriority.prioritisation.impl;
 
-import com.github.grundic.agentPriority.config.AgentPriorityRegistry;
-import com.github.grundic.agentPriority.config.BaseConfig;
+import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
 
 /**
  * User: g.chernyshev
  * Date: 02/11/16
- * Time: 21:06
+ * Time: 21:07
  */
-public class ByName implements AgentPriority<String> {
-
-    final public static String TYPE = "byName";
-
-    public ByName(@NotNull AgentPriorityRegistry registry) {
-        registry.register(this);
-    }
+public class ByConfigurationParameter implements AgentPriority {
+    public final static String TYPE = "byConfigurationParameter";
 
     @NotNull
     @Override
@@ -57,7 +49,7 @@ public class ByName implements AgentPriority<String> {
     @NotNull
     @Override
     public String getName() {
-        return "By name.";
+        return "By configuration parameter";
     }
 
     @NotNull
@@ -72,17 +64,11 @@ public class ByName implements AgentPriority<String> {
         if (null == buildAgent) {
             return null;
         }
-
-        return buildAgent.getName();
-    }
-
-    @XmlRootElement
-    @XmlType(name = TYPE)
-    public static class Config implements BaseConfig {
-        @NotNull
-        @Override
-        public String getType() {
-            return TYPE;
-        }
+        // TODO: add reading of parameter from config.
+//        if (null != input) {
+//            final String name = input.getConfig().getName();
+//            return input.getBuildAgent().getConfigurationParameters().get(name);
+//        }
+        return null;
     }
 }

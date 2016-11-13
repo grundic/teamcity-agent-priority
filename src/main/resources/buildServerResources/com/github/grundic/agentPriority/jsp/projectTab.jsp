@@ -22,12 +22,64 @@
   ~ THE SOFTWARE.
   --%>
 <%@ include file="/include.jsp" %>
-<jsp:useBean id="priorities" scope="request"
-             type="java.util.List<com.github.grundic.agentPriority.prioritisation.AgentPriority >"/>
+<jsp:useBean id="currentProject" type="jetbrains.buildServer.serverSide.SProject" scope="request"/>
+<jsp:useBean id="availablePriorities" scope="request"
+             type="java.util.Collection<com.github.grundic.agentPriority.prioritisation.AgentPriority >"/>
+
+<div class="section noMargin">
+    <h2 class="noBorder">Agent priorities</h2>
+    <bs:smallNote>Available ordering of build agents:<c:forEach items="${availablePriorities}" var="priority"
+                                                                varStatus="pos"><c:out value="${priority.name}"/><c:if
+            test="${not pos.last}">, </c:if></c:forEach>.</bs:smallNote>
+
+    <bs:refreshable containerId="PrioritiesTable" pageUrl="${pageUrl}">
+
+        <bs:messages key="PriorityAdded"/>
+        <bs:messages key="PriorityUpdated"/>
+        <bs:messages key="PriorityRemoved"/>
+
+        <c:if test="${not currentProject.readOnly}">
+            <div>
+                <forms:addButton onclick="BS.AgentPriorityDialog.showAddDialog()">Add Priority</forms:addButton>
+            </div>
+        </c:if>
+    </bs:refreshable>
 
 
-<h1>Hello from plugin agent priority!</h1>
+    <bs:modalDialog formId="AgentPriority" title="Add Priority" saveCommand="BS.AgentPriorityDialog.save()" closeCommand="BS.AgentPriorityDialog.close()" action="${AgentPrioritysUrl}">
+        <table class="runnerFormTable" style="width: 99%;">
+            <tr>
+                <td>
+                    <label>Priority type: </label>
+                </td>
+                <td>
+          <span id="PriorityType">
+            <forms:select name="typeSelector" enableFilter="true" onchange="BS.AgentPriorityDialog.priorityChanged(this)" className="longField" style="width:28em">
+                <option value="">-- Select a priority type --</option>
+                <c:forEach items="${availablePriorities}" var="priority">
+                    <option value="${priority.type}"><c:out value="${priority.name}"/></option>
+                </c:forEach>
+            </forms:select>
+            <forms:saving id="parametersProgress" className="progressRingInline"/>
+          </span>
+                    <span id="readOnlyPriorityType"></span>
+                </td>
+            </tr>
+        </table>
 
-<c:forEach var="priority" items="${priorities}">
-    ${priority.name}
-</c:forEach>
+        <div id="PriorityParams"></div>
+
+        <span class="error" id="error_priorityType"></span>
+
+        <div class="popupSaveButtonsBlock">
+            <forms:submit label="Save"/>
+            <forms:cancel onclick="BS.AgentPriorityDialog.close()"/>
+            <forms:saving id="saveProgress"/>
+            <input type="hidden" name="projectId" value="${currentProject.externalId}"/>
+            <input type="hidden" name="priorityType" value=""/>
+            <input type="hidden" name="priorityId" value=""/>
+            <input type="hidden" name="afterAddUrl" value=""/>
+            <input type="hidden" name="savePriority" value="save"/>
+        </div>
+    </bs:modalDialog>
+</div>

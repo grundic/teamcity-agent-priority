@@ -32,6 +32,10 @@ package com.github.grundic.agentPriority;
 public final class Constants {
     public final static String PLUGIN_NAME = "teamcity-agent-priority";
     public final static String PLUGIN_TITLE = "Agent priority";
+
+    public static final String FEATURE_TYPE = "AgentPriority";
+    public static final String TYPE_PARAM = "agentPriorityType";
+
     public final static String PLUGIN_PACKAGE = Constants.class.getPackage().getName();
     public final static String PLUGIN_PATH = PLUGIN_PACKAGE.replace('.', '/');
 }
