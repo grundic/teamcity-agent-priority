@@ -34,9 +34,9 @@
 
     <bs:refreshable containerId="PrioritiesTable" pageUrl="${pageUrl}">
 
-        <bs:messages key="PriorityAdded"/>
-        <bs:messages key="PriorityUpdated"/>
-        <bs:messages key="PriorityRemoved"/>
+        <bs:messages key="priorityAdded"/>
+        <bs:messages key="priorityUpdated"/>
+        <bs:messages key="priorityRemoved"/>
 
         <c:if test="${not currentProject.readOnly}">
             <div>
@@ -46,7 +46,7 @@
     </bs:refreshable>
 
 
-    <bs:modalDialog formId="AgentPriority" title="Add Priority" saveCommand="BS.AgentPriorityDialog.save()" closeCommand="BS.AgentPriorityDialog.close()" action="${AgentPrioritysUrl}">
+    <bs:modalDialog formId="AgentPriority" title="Add Priority" saveCommand="BS.AgentPriorityDialog.save()" closeCommand="BS.AgentPriorityDialog.close()" action="/admin/teamcity-agent-priority/priorities.html">
         <table class="runnerFormTable" style="width: 99%;">
             <tr>
                 <td>
@@ -76,8 +76,8 @@
             <forms:cancel onclick="BS.AgentPriorityDialog.close()"/>
             <forms:saving id="saveProgress"/>
             <input type="hidden" name="projectId" value="${currentProject.externalId}"/>
-            <input type="hidden" name="priorityType" value=""/>
             <input type="hidden" name="priorityId" value=""/>
+            <input type="hidden" name="priorityType" value=""/>
             <input type="hidden" name="afterAddUrl" value=""/>
             <input type="hidden" name="savePriority" value="save"/>
         </div>

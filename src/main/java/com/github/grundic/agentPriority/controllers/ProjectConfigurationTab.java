@@ -43,7 +43,7 @@ import static com.github.grundic.agentPriority.Constants.*;
  * Date: 06/11/16
  * Time: 21:57
  */
-public class AgentPriorityProjectConfigurationTab extends EditProjectTab {
+public class ProjectConfigurationTab extends EditProjectTab {
 
     @NotNull
     private final AgentPriorityManager priorityManager;
@@ -51,7 +51,7 @@ public class AgentPriorityProjectConfigurationTab extends EditProjectTab {
     private final PluginDescriptor pluginDescriptor;
 
 
-    public AgentPriorityProjectConfigurationTab(
+    public ProjectConfigurationTab(
             @NotNull PagePlaces pagePlaces,
             @NotNull AgentPriorityManager priorityManager,
             @NotNull PluginDescriptor pluginDescriptor

@@ -28,16 +28,18 @@
 <!--suppress SpringBeanConstructorArgInspection -->
 <beans default-autowire="constructor">
 
+    <!-- Starting build agents filter -->
     <bean class="com.github.grundic.agentPriority.buildDistribution.PriorityAgentsFilter"/>
+    <!--Priority manager-->
     <bean class="com.github.grundic.agentPriority.manager.AgentPriorityManager"/>
 
-    <!--Agent priority implementations  -->
+    <!-- Agent priority implementations -->
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByBuildResult"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByConfigurationParameter"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByName"/>
 
-    <!--Controllers-->
-
-    <bean class="com.github.grundic.agentPriority.controllers.AgentPriorityProjectConfigurationTab"/>
+    <!-- Web -->
+    <bean class="com.github.grundic.agentPriority.controllers.ProjectConfigurationTab"/>
+    <bean class="com.github.grundic.agentPriority.controllers.ProjectPriorityController"/>
     <bean class="com.github.grundic.agentPriority.controllers.ConfigurationController"/>
 </beans>

@@ -25,9 +25,11 @@
 package com.github.grundic.agentPriority.prioritisation;
 
 import com.google.common.base.Function;
+import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import jetbrains.buildServer.serverSide.ServerExtension;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +50,11 @@ public abstract class AgentPriority implements Function<SBuildAgent, Comparable>
     @NotNull
     public String getJspPath() {
         return String.format("priority/%s.jsp", getType());
+    }
+
+    @Nullable
+    public PropertiesProcessor getPropertiesProcessor() {
+        return null;
     }
 
     @NotNull

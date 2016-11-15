@@ -41,7 +41,15 @@ test {
 }
 
 dependencies {
-    compile 'org.jetbrains.teamcity:server-api:10.0.2'
+    compile "org.jetbrains.teamcity:server-api:${teamcityVersion}"
+    /* This dependency is not provided by JetBrains,
+     * so you have to install it manually from TeamCity distribution
+     * in order to be able to build plugin:
+     *
+     * mvn install:install-file -Dfile=webapps/ROOT/WEB-INF/lib/web.jar\
+     * -DgroupId=org.jetbrains.teamcity -DartifactId=web -Dversion=10.0.2 -Dpackaging=jar
+     */
+    provided "org.jetbrains.teamcity:web:${teamcityVersion}"
 }
 
 teamcity {

@@ -32,10 +32,7 @@ import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.github.grundic.agentPriority.Constants.FEATURE_TYPE;
 
@@ -87,7 +84,16 @@ public class AgentPriorityManager {
     }
 
     @Nullable
-    public AgentPriorityDescriptor findPriorityById(@NotNull SProject project, @NotNull String connectionId) {
+    public AgentPriorityDescriptor findPriorityById(@NotNull SProject project, @NotNull String priorityId) {
         return null;
+    }
+
+    @NotNull
+    public AgentPriorityDescriptor addPriority(@NotNull SProject project, @NotNull String priorityType, @NotNull Map<String, String> parameters) {
+        Map<String, String> projectFeatureParams = new HashMap<>();
+        projectFeatureParams.putAll(parameters);
+        projectFeatureParams.put("priorityType", priorityType);
+
+        return new AgentPriorityDescriptor(this, project.addFeature(FEATURE_TYPE, projectFeatureParams), project);
     }
 }
