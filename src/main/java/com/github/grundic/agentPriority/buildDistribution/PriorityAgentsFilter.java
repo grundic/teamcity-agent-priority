@@ -36,6 +36,8 @@ import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterResult;
 import jetbrains.buildServer.serverSide.buildDistribution.StartingBuildAgentsFilter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  * User: g.chernyshev
  * Date: 02/11/16
@@ -68,8 +70,12 @@ public class PriorityAgentsFilter implements StartingBuildAgentsFilter {
         }
 
         SProject project = buildType.getProject();
-        Ordering<SBuildAgent> agentOrdering = Ordering.natural().nullsFirst();
+        List<AgentPriorityDescriptor> configured = priorityManager.configured(project);
+        if (configured.isEmpty()) {
+            return new AgentsFilterResult();
+        }
 
+        Ordering<SBuildAgent> agentOrdering = Ordering.natural().nullsFirst();
         for (AgentPriorityDescriptor priorityDescriptor : priorityManager.configured(project)) {
             agentOrdering = agentOrdering.compound(Ordering.natural().nullsFirst().onResultOf(priorityDescriptor.getAgentPriority()));
         }
