@@ -149,16 +149,6 @@ public class ProjectPriorityController extends BaseFormXmlController {
         project.persist(actionFactory.createAction(project, String.format("Agent priority %s created.", priorityBean.getPriorityType())));
 
         getOrCreateMessages(request).addMessage("priorityAdded", "Agent priority successfully created.");
-
-        String afterAddUrl = request.getParameter("afterAddUrl");
-        if ((afterAddUrl != null) && (!afterAddUrl.equals(""))) {
-            String redirectUrl = afterAddUrl;
-            if (!redirectUrl.contains("?")) {
-                redirectUrl = redirectUrl + "?";
-            }
-            redirectUrl = redirectUrl + "&priorityId=" + priorityDescriptor.getId();
-            writeRedirect(xmlResponse, redirectUrl);
-        }
     }
 
     private void doUpdate(@NotNull HttpServletRequest request, @NotNull SProject project, @NotNull AgentPriorityBean priorityBean) {

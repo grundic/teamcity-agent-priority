@@ -117,7 +117,6 @@
             <input type="hidden" name="projectId" value="${currentProject.externalId}"/>
             <input type="hidden" name="priorityId" value=""/>
             <input type="hidden" name="priorityType" value=""/>
-            <input type="hidden" name="afterAddUrl" value=""/>
             <input type="hidden" name="savePriority" value="save"/>
         </div>
     </bs:modalDialog>

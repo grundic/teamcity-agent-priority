@@ -43,7 +43,6 @@ BS.AgentPriorityDialog = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.Abstrac
         $j('#priorityType').show();
         $j('#readOnlyPriorityType').hide();
         this.formElement().priorityId.value = '';
-        this.formElement().afterAddUrl.value = '<bs:escapeForJs text="${afterAddUrl}"/>';
         $('typeSelector').setSelectValue(type == null ? '' : type);
         this.priorityChanged($('typeSelector'));
         this.showCentered();
