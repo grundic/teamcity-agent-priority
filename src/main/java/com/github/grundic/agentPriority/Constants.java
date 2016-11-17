@@ -34,7 +34,8 @@ public final class Constants {
     public final static String PLUGIN_TITLE = "Agent priority";
 
     public static final String FEATURE_TYPE = "agentPriority";
-    public static final String TYPE_PARAM = "agentPriorityType";
+    public static final String ID_PARAM = "priorityId";
+    public static final String TYPE_PARAM = "priorityType";
 
     public final static String PLUGIN_PACKAGE = Constants.class.getPackage().getName();
     public final static String PLUGIN_PATH = PLUGIN_PACKAGE.replace('.', '/');

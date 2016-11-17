@@ -43,8 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-import static com.github.grundic.agentPriority.Constants.PLUGIN_NAME;
-import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
+import static com.github.grundic.agentPriority.Constants.*;
 
 /**
  * User: g.chernyshev
@@ -75,8 +74,8 @@ public class ConfigurationController extends BaseController {
     @Nullable
     @Override
     protected ModelAndView doHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws Exception {
-        final String priorityId = request.getParameter("priorityId");
-        final String priorityType = request.getParameter("priorityType");
+        final String priorityId = request.getParameter(ID_PARAM);
+        final String priorityType = request.getParameter(TYPE_PARAM);
         SProject project = projectManager.findProjectByExternalId(request.getParameter("projectId"));
 
         if (project == null) {

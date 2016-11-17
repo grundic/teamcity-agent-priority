@@ -36,6 +36,7 @@ import jetbrains.buildServer.controllers.admin.projects.PluginPropertiesUtil;
 import jetbrains.buildServer.serverSide.ConfigActionFactory;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jdom.Element;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static com.github.grundic.agentPriority.Constants.PLUGIN_NAME;
+import static com.github.grundic.agentPriority.Constants.TYPE_PARAM;
 
 /**
  * User: g.chernyshev
@@ -94,7 +96,7 @@ public class ProjectPriorityController extends BaseFormXmlController {
         if (request.getParameter("savePriority") != null) {
             doSave(request, xmlResponse, project, errors);
         } else if (request.getParameter("deletePriority") != null) {
-            doRemove();
+            doRemove(request, project);
         }
         errors.serialize(xmlResponse);
     }
@@ -111,7 +113,7 @@ public class ProjectPriorityController extends BaseFormXmlController {
         if (StringUtil.isEmpty(priorityBean.getPriorityId())) {
             doCreate(request, xmlResponse, project, priorityBean);
         } else {
-            doUpdate();
+            doUpdate(request, project, priorityBean);
         }
     }
 
@@ -138,7 +140,7 @@ public class ProjectPriorityController extends BaseFormXmlController {
                 return;
             }
         }
-        errors.addError("priorityType", String.format("Unknown priority type '%s'!", priorityType));
+        errors.addError(TYPE_PARAM, String.format("Unknown priority type '%s'!", priorityType));
     }
 
     private void doCreate(@NotNull HttpServletRequest request, @NotNull Element xmlResponse, @NotNull SProject project, @NotNull AgentPriorityBean priorityBean) {
@@ -146,7 +148,7 @@ public class ProjectPriorityController extends BaseFormXmlController {
         AgentPriorityDescriptor priorityDescriptor = priorityManager.addPriority(project, priorityBean.getPriorityType(), priorityBean.getProperties());
         project.persist(actionFactory.createAction(project, String.format("Agent priority %s created.", priorityBean.getPriorityType())));
 
-        getOrCreateMessages(request).addMessage("priorityAdded", "Agent priority successfully created");
+        getOrCreateMessages(request).addMessage("priorityAdded", "Agent priority successfully created.");
 
         String afterAddUrl = request.getParameter("afterAddUrl");
         if ((afterAddUrl != null) && (!afterAddUrl.equals(""))) {
@@ -159,12 +161,23 @@ public class ProjectPriorityController extends BaseFormXmlController {
         }
     }
 
-    private void doUpdate() {
-
+    private void doUpdate(@NotNull HttpServletRequest request, @NotNull SProject project, @NotNull AgentPriorityBean priorityBean) {
+        assert null != priorityBean.getPriorityId();
+        assert null != priorityBean.getPriorityType();
+        priorityManager.updatePriority(project, priorityBean.getPriorityId(), priorityBean.getPriorityType(), priorityBean.getProperties());
+        project.persist(actionFactory.createAction(project, String.format("Agent priority %s updated.", priorityBean.getPriorityType())));
+        getOrCreateMessages(request).addMessage("priorityUpdated", "Agent priority was updated.");
     }
 
-    private void doRemove() {
-
+    private void doRemove(@NotNull HttpServletRequest request, @NotNull SProject project) {
+        final String priorityId = request.getParameter("deletePriority");
+        assert null != priorityId;
+        SProjectFeatureDescriptor feature = project.removeFeature(priorityId);
+        if (null != feature) {
+            final String actionDescription = "Agent priority removed";
+            project.persist(actionFactory.createAction(project, actionDescription));
+            getOrCreateMessages(request).addMessage("priorityRemove", actionDescription);
+        }
     }
 
 }

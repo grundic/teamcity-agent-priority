@@ -49,6 +49,18 @@ BS.AgentPriorityDialog = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.Abstrac
         this.showCentered();
     },
 
+    showEditDialog: function(priorityId, name, readOnly) {
+        this.enable();
+        $j('#AgentPriorityTitle').text('Edit Priority');
+        $j('#priorityType').hide();
+        $j('#readOnlyPriorityType').show();
+        $j('#readOnlyPriorityType').text(name);
+        this.formElement().priorityType.value = '';
+        this.formElement().priorityId.value = priorityId;
+        this.loadParameters(readOnly);
+        this.showCentered();
+    },
+
     priorityChanged: function (selector) {
         this.formElement().priorityType.value = '';
         $j('#priorityParams').html('');
@@ -73,5 +85,44 @@ BS.AgentPriorityDialog = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.Abstrac
                 that.recenterDialog();
             }
         });
+    },
+
+
+    save: function () {
+        if (this.formElement().priorityId.value == '' && $('typeSelector').selectedIndex <= 0) {
+            alert("Please select some agent priority");
+            return false;
+        }
+
+        BS.FormSaver.save(this, this.formElement().action, OO.extend(BS.ErrorsAwareListener, {
+            onCompleteSave: function (form, responseXML, err) {
+                err = BS.XMLResponse.processErrors(responseXML, {}, BS.PluginPropertiesForm.propertiesErrorsHandler);
+
+                form.setSaving(false);
+                if (err) {
+                    form.enable();
+                } else {
+                    if (!BS.XMLResponse.processRedirect(responseXML)) {
+                        $('prioritiesTable').refresh();
+                        BS.AgentPriorityDialog.close();
+                    }
+                }
+            }
+        }));
+        return false;
     }
 }));
+
+BS.AgentPriority = {
+    deletePriority: function (url, priorityId, projectId) {
+        if (!confirm("Are you sure you want to delete this agent priority?")) return;
+
+        BS.ajaxRequest(url, {
+            parameters: 'deletePriority=' + priorityId + "&projectId=" + projectId,
+
+            onComplete: function () {
+                $('prioritiesTable').refresh();
+            }
+        });
+    }
+};

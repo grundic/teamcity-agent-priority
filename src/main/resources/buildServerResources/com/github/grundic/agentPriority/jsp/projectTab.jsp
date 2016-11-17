@@ -25,6 +25,8 @@
 <jsp:useBean id="currentProject" type="jetbrains.buildServer.serverSide.SProject" scope="request"/>
 <jsp:useBean id="availablePriorities" scope="request"
              type="java.util.Collection<com.github.grundic.agentPriority.prioritisation.AgentPriority >"/>
+<jsp:useBean id="configuredPriorities" scope="request"
+             type="java.util.Map<jetbrains.buildServer.serverSide.SProject, java.util.List<com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor >>"/>
 
 <div class="section noMargin">
     <h2 class="noBorder">Agent priorities</h2>
@@ -32,7 +34,7 @@
                                                                 varStatus="pos"><c:out value="${priority.name}"/><c:if
             test="${not pos.last}">, </c:if></c:forEach>.</bs:smallNote>
 
-    <bs:refreshable containerId="PrioritiesTable" pageUrl="${pageUrl}">
+    <bs:refreshable containerId="prioritiesTable" pageUrl="${pageUrl}">
 
         <bs:messages key="priorityAdded"/>
         <bs:messages key="priorityUpdated"/>
@@ -43,6 +45,43 @@
                 <forms:addButton onclick="BS.AgentPriorityDialog.showAddDialog()">Add Priority</forms:addButton>
             </div>
         </c:if>
+
+        <c:forEach items="${configuredPriorities}" var="entry">
+            <c:set var="project" value="${entry.key}"/>
+            <c:set var="projectPriorities" value="${entry.value}"/>
+            <c:set var="inherited" value="${project != currentProject}"/>
+
+            <c:if test="${inherited}">
+                <br/>
+                <p>Agent priorities inherited from <admin:editProjectLink projectId="${project.externalId}"><c:out
+                        value="${project.name}"/></admin:editProjectLink>:</p>
+            </c:if>
+
+            <l:tableWithHighlighting className="parametersTable" highlightImmediately="true" style="width:40%;">
+                <tr>
+                    <th style="width: 30%">Priority</th>
+                    <th colspan="${inherited ? 1 : 2}">Actions</th>
+                </tr>
+                <c:forEach items="${projectPriorities}" var="priority">
+                    <c:choose>
+                        <c:when test="${inherited}">
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="onclick" value="BS.AgentPriorityDialog.showEditDialog('${priority.id}', '${priority.agentPriority.name}', ${currentProject.readOnly})"/>
+                            <tr>
+                                <td class="highlight" onclick="${onclick}"><c:out value='${priority.agentPriority.name}'/></td>
+                                <c:if test="${not inherited}">
+                                    <td class="edit highlight" onclick="${onclick}"><a href="#" onclick="${onclick}">${currentProject.readOnly ? 'View' : 'Edit'}</a></td>
+                                    <c:if test="${not currentProject.readOnly}">
+                                        <td class="edit"><a href="#" onclick="BS.AgentPriority.deletePriority('/admin/teamcity-agent-priority/priorities.html', '${priority.id}', '${currentProject.externalId}')">Delete</a></td>
+                                    </c:if>
+                                </c:if>
+                            </tr>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+            </l:tableWithHighlighting>
+        </c:forEach>
     </bs:refreshable>
 
 

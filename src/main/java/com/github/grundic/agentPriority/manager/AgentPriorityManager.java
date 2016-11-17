@@ -35,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 import static com.github.grundic.agentPriority.Constants.FEATURE_TYPE;
+import static com.github.grundic.agentPriority.Constants.TYPE_PARAM;
 
 /**
  * User: g.chernyshev
@@ -75,7 +76,7 @@ public class AgentPriorityManager {
 
         for (SProject p : parents) {
             for (SProjectFeatureDescriptor feature : p.getOwnFeaturesOfType(FEATURE_TYPE)) {
-                AgentPriorityDescriptor descriptor = new AgentPriorityDescriptor(this, feature, project);
+                AgentPriorityDescriptor descriptor = new AgentPriorityDescriptor(this, feature, p);
                 priorityDescriptors.add(descriptor);
             }
         }
@@ -85,6 +86,15 @@ public class AgentPriorityManager {
 
     @Nullable
     public AgentPriorityDescriptor findPriorityById(@NotNull SProject project, @NotNull String priorityId) {
+        List<SProject> parents = project.getProjectPath();
+        Collections.reverse(parents);
+
+        for (SProject p : parents) {
+            SProjectFeatureDescriptor feature = p.findFeatureById(priorityId);
+            if (null != feature && feature.getType().equals(FEATURE_TYPE)) {
+                return new AgentPriorityDescriptor(this, feature, p);
+            }
+        }
         return null;
     }
 
@@ -92,8 +102,15 @@ public class AgentPriorityManager {
     public AgentPriorityDescriptor addPriority(@NotNull SProject project, @NotNull String priorityType, @NotNull Map<String, String> parameters) {
         Map<String, String> projectFeatureParams = new HashMap<>();
         projectFeatureParams.putAll(parameters);
-        projectFeatureParams.put("priorityType", priorityType);
+        projectFeatureParams.put(TYPE_PARAM, priorityType);
 
         return new AgentPriorityDescriptor(this, project.addFeature(FEATURE_TYPE, projectFeatureParams), project);
+    }
+
+    public boolean updatePriority(@NotNull SProject project, @NotNull String priorityId, @NotNull String priorityType, @NotNull Map<String, String> parameters) {
+        Map<String, String> projectFeatureParams = new HashMap<>();
+        projectFeatureParams.putAll(parameters);
+        projectFeatureParams.put(TYPE_PARAM, priorityType);
+        return project.updateFeature(priorityId, FEATURE_TYPE, projectFeatureParams);
     }
 }
