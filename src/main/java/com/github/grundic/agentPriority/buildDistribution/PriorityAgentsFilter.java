@@ -75,9 +75,9 @@ public class PriorityAgentsFilter implements StartingBuildAgentsFilter {
             return new AgentsFilterResult();
         }
 
-        Ordering<SBuildAgent> agentOrdering = Ordering.natural().nullsFirst();
+        Ordering<SBuildAgent> agentOrdering = Ordering.allEqual().nullsLast();
         for (AgentPriorityDescriptor priorityDescriptor : priorityManager.configured(project)) {
-            agentOrdering = agentOrdering.compound(Ordering.natural().nullsFirst().onResultOf(priorityDescriptor.getAgentPriority()));
+            agentOrdering = agentOrdering.compound(Ordering.natural().nullsLast().onResultOf(priorityDescriptor.getAgentPriority()));
         }
 
         final AgentsFilterResult result = new AgentsFilterResult();

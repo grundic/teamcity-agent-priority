@@ -107,7 +107,7 @@ public class ConfigurationController extends BaseController {
 
         String jspPath = pluginDescriptor.getPluginResourcesPath(PLUGIN_PATH + "/jsp/priorityConfiguration.jsp");
         ModelAndView mv = new ModelAndView(jspPath);
-        mv.getModel().put("priorityBean", priorityBean);
+        mv.getModel().put("propertiesBean", priorityBean);
         mv.getModel().put("agentPriority", agentPriority);
         mv.getModel().put("project", project);
         return mv;

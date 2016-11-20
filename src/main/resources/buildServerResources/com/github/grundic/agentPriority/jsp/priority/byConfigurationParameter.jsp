@@ -21,5 +21,14 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   ~ THE SOFTWARE.
   --%>
+<%@ include file="/include-internal.jsp"%>
+<jsp:useBean id="propertiesBean" type="com.github.grundic.agentPriority.prioritisation.AgentPriorityBean" scope="request"/>
 
-<h1>ByConfigurationParameter Priority</h1>
+<tr>
+    <td><label for="parameterName">Priority parameter name:</label><l:star/></td>
+    <td>
+        <props:textProperty name="parameterName" className="longField"/>
+        <span class="smallNote">Provide the name of the configuration parameter, from which agent priority value would be fetched.</span>
+        <span class="error" id="error_parameterName"></span>
+    </td>
+</tr>

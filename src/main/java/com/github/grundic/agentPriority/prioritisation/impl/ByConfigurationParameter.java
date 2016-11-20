@@ -30,15 +30,14 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-import static com.github.grundic.agentPriority.Constants.PLUGIN_PATH;
-
 /**
  * User: g.chernyshev
  * Date: 02/11/16
  * Time: 21:07
  */
 public class ByConfigurationParameter extends AgentPriority {
-    public final static String TYPE = "byConfigurationParameter";
+    private final static String TYPE = "byConfigurationParameter";
+    private final static String PARAMETER_NAME = "parameterName";
 
     @NotNull
     @Override
@@ -58,11 +57,11 @@ public class ByConfigurationParameter extends AgentPriority {
         if (null == buildAgent) {
             return null;
         }
-        // TODO: add reading of parameter from config.
-//        if (null != input) {
-//            final String name = input.getConfig().getName();
-//            return input.getBuildAgent().getConfigurationParameters().get(name);
-//        }
-        return null;
+        String parameterName = getParameters().get(PARAMETER_NAME);
+        if (null == parameterName) {
+            return null;
+        }
+
+        return buildAgent.getConfigurationParameters().get(parameterName);
     }
 }

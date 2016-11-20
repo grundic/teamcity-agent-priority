@@ -31,6 +31,7 @@ import jetbrains.buildServer.serverSide.ServerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,6 +42,21 @@ import java.util.Map;
  */
 
 public abstract class AgentPriority implements Function<SBuildAgent, Comparable>, ServerExtension, Comparable<AgentPriority> {
+    @Nullable
+    private Map<String, String> parameters;
+
+    @NotNull
+    protected Map<String, String> getParameters() {
+        if (null == parameters) {
+            return Collections.emptyMap();
+        }
+        return parameters;
+    }
+
+    void setParameters(@Nullable Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
     @NotNull
     public abstract String getType();
 

@@ -37,7 +37,8 @@ import javax.annotation.Nullable;
  */
 public class ByName extends AgentPriority {
 
-    final public static String TYPE = "byName";
+    private final static String TYPE = "byName";
+    private final static String CASE_INSENSITIVE = "caseInsensitive";
 
     @NotNull
     @Override
@@ -57,7 +58,11 @@ public class ByName extends AgentPriority {
         if (null == buildAgent) {
             return null;
         }
+        String parameterName = getParameters().get(CASE_INSENSITIVE);
+        if (null == parameterName || parameterName.equals("false")) {
+            return buildAgent.getName();
+        }
 
-        return buildAgent.getName();
+        return buildAgent.getName().toLowerCase();
     }
 }

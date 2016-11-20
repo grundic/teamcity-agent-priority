@@ -22,7 +22,7 @@
   ~ THE SOFTWARE.
   --%>
 <jsp:useBean id="project" type="jetbrains.buildServer.serverSide.SProject" scope="request"/>
-<jsp:useBean id="priorityBean" type="com.github.grundic.agentPriority.prioritisation.AgentPriorityBean" scope="request"/>
+<jsp:useBean id="propertiesBean" type="com.github.grundic.agentPriority.prioritisation.AgentPriorityBean" scope="request"/>
 <jsp:useBean id="agentPriority" type="com.github.grundic.agentPriority.prioritisation.AgentPriority" scope="request"/>
 
 <table class="runnerFormTable" style="width: 99%;">

@@ -21,13 +21,7 @@
   ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   ~ THE SOFTWARE.
   --%>
-<%@ include file="/include-internal.jsp"%>
-<jsp:useBean id="propertiesBean" type="com.github.grundic.agentPriority.prioritisation.AgentPriorityBean" scope="request"/>
 
-<tr>
-    <td><label for="caseInsensitive">Case insensitive:</label><l:star/></td>
-    <td>
-        <props:checkboxProperty name="caseInsensitive" uncheckedValue="false"/>
-        <span class="error" id="error_caseInsensitive"></span>
-    </td>
-</tr>
+<div>
+    <p>This agent priority doesn't have any configuration.</p>
+</div>

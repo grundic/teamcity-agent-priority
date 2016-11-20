@@ -58,6 +58,7 @@ public class AgentPriorityDescriptor {
             agentPriority = null;
         } else {
             agentPriority = priority;
+            agentPriority.setParameters(featureDescriptor.getParameters());
         }
     }
 
