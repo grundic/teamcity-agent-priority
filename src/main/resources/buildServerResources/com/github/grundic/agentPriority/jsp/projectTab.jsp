@@ -65,6 +65,10 @@
                 <c:forEach items="${projectPriorities}" var="priority">
                     <c:choose>
                         <c:when test="${inherited}">
+                            <tr>
+                                <td> <c:out value='${priority.agentPriority.name}'/></td>
+                                <td></td>
+                            </tr>
                         </c:when>
                         <c:otherwise>
                             <c:set var="onclick" value="BS.AgentPriorityDialog.showEditDialog('${priority.id}', '${priority.agentPriority.name}', ${currentProject.readOnly})"/>
