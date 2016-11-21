@@ -131,26 +131,26 @@ public class PriorityAgentsFilterTest {
         Assert.assertEquals(names, Arrays.asList("agent1", "agent2", "agent3", "agent4", "agent5"));
     }
 
-//    @Test
-//    public void testFilterAgentsByConfigurationParameter() throws Exception {
-//        AgentPriorityDescriptor byConfigurationParameter = mock(AgentPriorityDescriptor.class);
-//        descriptors.add(byConfigurationParameter);
-//        AgentPriority priority = new ByConfigurationParameter();
-//        Map<String, String> params = new HashMap<>();
-//        params.put("parameterName", "priority");
-//        priority.setParameters(params);
-//        when(byConfigurationParameter.getAgentPriority()).thenReturn(priority);
-//
-//
-//        PriorityAgentsFilter filter = new PriorityAgentsFilter(priorityManager, projectManager);
-//        AgentsFilterResult result = filter.filterAgents(context);
-//
-//        List<String> names = new ArrayList<>();
-//        for (SBuildAgent agent : result.getFilteredConnectedAgents()) {
-//            names.add(agent.getName());
-//        }
-//
-//        Assert.assertEquals(names, Arrays.asList("agent5", "agent4", "agent3", "agent2", "agent1"));
-//    }
+    @Test
+    public void testFilterAgentsByConfigurationParameter() throws Exception {
+        AgentPriorityDescriptor byConfigurationParameter = mock(AgentPriorityDescriptor.class);
+        descriptors.add(byConfigurationParameter);
+        AgentPriority priority = new ByConfigurationParameter();
+        Map<String, String> params = new HashMap<>();
+        params.put("parameterName", "priority");
+        priority.setParameters(params);
+        when(byConfigurationParameter.getAgentPriority()).thenReturn(priority);
+
+
+        PriorityAgentsFilter filter = new PriorityAgentsFilter(priorityManager, projectManager);
+        AgentsFilterResult result = filter.filterAgents(context);
+
+        List<String> names = new ArrayList<>();
+        for (SBuildAgent agent : result.getFilteredConnectedAgents()) {
+            names.add(agent.getName());
+        }
+
+        Assert.assertEquals(names, Arrays.asList("agent5", "agent4", "agent3", "agent2", "agent1"));
+    }
 
 }

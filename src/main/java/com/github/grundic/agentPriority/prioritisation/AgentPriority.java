@@ -53,7 +53,7 @@ public abstract class AgentPriority implements Function<SBuildAgent, Comparable>
         return parameters;
     }
 
-    void setParameters(@Nullable Map<String, String> parameters) {
+    public void setParameters(@Nullable Map<String, String> parameters) {
         this.parameters = parameters;
     }
 
