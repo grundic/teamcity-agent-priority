@@ -24,6 +24,8 @@
 <%@ include file="/include-internal.jsp"%>
 <jsp:useBean id="propertiesBean" type="com.github.grundic.agentPriority.prioritisation.AgentPriorityBean" scope="request"/>
 
+<p>This priority orders builds agents by some value provided as property in <i>buildAgent.properties</i> file.</p>
+
 <tr>
     <td><label for="parameterName">Priority parameter name:</label><l:star/></td>
     <td>

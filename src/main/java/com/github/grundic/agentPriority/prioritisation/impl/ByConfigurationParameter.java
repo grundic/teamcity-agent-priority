@@ -25,6 +25,7 @@
 package com.github.grundic.agentPriority.prioritisation.impl;
 
 import com.github.grundic.agentPriority.prioritisation.AgentPriority;
+import com.google.common.primitives.Ints;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +54,7 @@ public class ByConfigurationParameter extends AgentPriority {
 
     @Nullable
     @Override
-    public String apply(@Nullable SBuildAgent buildAgent) {
+    public Integer apply(@Nullable SBuildAgent buildAgent) {
         if (null == buildAgent) {
             return null;
         }
@@ -62,6 +63,7 @@ public class ByConfigurationParameter extends AgentPriority {
             return null;
         }
 
-        return buildAgent.getConfigurationParameters().get(parameterName);
+        String value = buildAgent.getConfigurationParameters().get(parameterName);
+        return Ints.tryParse(value);
     }
 }

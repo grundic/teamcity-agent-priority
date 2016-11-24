@@ -106,7 +106,7 @@ public class PriorityAgentsFilterTest {
         when(agent4.getName()).thenReturn("agent4");
         when(agent5.getName()).thenReturn("agent5");
 
-        when(agent1.getConfigurationParameters().get(anyString())).thenReturn("5");
+        when(agent1.getConfigurationParameters().get(anyString())).thenReturn("10");
         when(agent2.getConfigurationParameters().get(anyString())).thenReturn("4");
         when(agent3.getConfigurationParameters().get(anyString())).thenReturn("3");
         when(agent4.getConfigurationParameters().get(anyString())).thenReturn("2");
