@@ -60,24 +60,33 @@
             <l:tableWithHighlighting className="parametersTable" highlightImmediately="true" style="width:40%;">
                 <tr>
                     <th style="width: 30%">Priority</th>
-                    <th colspan="${inherited ? 1 : 2}">Actions</th>
+                    <c:if test="${!inherited}">
+                        <th colspan="2">Actions</th>
+                    </c:if>
                 </tr>
                 <c:forEach items="${projectPriorities}" var="priority">
                     <c:choose>
                         <c:when test="${inherited}">
                             <tr>
-                                <td> <c:out value='${priority.agentPriority.name}'/></td>
-                                <td></td>
+                                <td><i><c:out value='${priority.agentPriority.name}'/></i></td>
                             </tr>
                         </c:when>
                         <c:otherwise>
-                            <c:set var="onclick" value="BS.AgentPriorityDialog.showEditDialog('${priority.id}', '${priority.agentPriority.name}', ${currentProject.readOnly})"/>
+                            <c:set var="onclick"
+                                   value="BS.AgentPriorityDialog.showEditDialog('${priority.id}', '${priority.agentPriority.name}', ${currentProject.readOnly})"/>
                             <tr>
-                                <td class="highlight" onclick="${onclick}"><c:out value='${priority.agentPriority.name}'/></td>
+                                <td class="highlight" onclick="${onclick}"><c:out
+                                        value='${priority.agentPriority.name}'/></td>
                                 <c:if test="${not inherited}">
-                                    <td class="edit highlight" onclick="${onclick}"><a href="#" onclick="${onclick}">${currentProject.readOnly ? 'View' : 'Edit'}</a></td>
+                                    <td class="edit highlight" onclick="${onclick}">
+                                        <a href="#"
+                                           onclick="${onclick}">${currentProject.readOnly ? 'View' : 'Edit'}</a>
+                                    </td>
                                     <c:if test="${not currentProject.readOnly}">
-                                        <td class="edit"><a href="#" onclick="BS.AgentPriority.deletePriority('/admin/teamcity-agent-priority/priorities.html', '${priority.id}', '${currentProject.externalId}')">Delete</a></td>
+                                        <td class="edit">
+                                            <a href="#"
+                                               onclick="BS.AgentPriority.deletePriority('/admin/teamcity-agent-priority/priorities.html', '${priority.id}', '${currentProject.externalId}')">Delete</a>
+                                        </td>
                                     </c:if>
                                 </c:if>
                             </tr>
@@ -89,7 +98,9 @@
     </bs:refreshable>
 
 
-    <bs:modalDialog formId="AgentPriority" title="Add Priority" saveCommand="BS.AgentPriorityDialog.save()" closeCommand="BS.AgentPriorityDialog.close()" action="/admin/teamcity-agent-priority/priorities.html">
+    <bs:modalDialog formId="AgentPriority" title="Add Priority" saveCommand="BS.AgentPriorityDialog.save()"
+                    closeCommand="BS.AgentPriorityDialog.close()"
+                    action="/admin/teamcity-agent-priority/priorities.html">
         <table class="runnerFormTable" style="width: 99%;">
             <tr>
                 <td>
@@ -97,7 +108,9 @@
                 </td>
                 <td>
           <span id="priorityType">
-            <forms:select name="typeSelector" enableFilter="true" onchange="BS.AgentPriorityDialog.priorityChanged(this)" className="longField" style="width:28em">
+            <forms:select name="typeSelector" enableFilter="true"
+                          onchange="BS.AgentPriorityDialog.priorityChanged(this)" className="longField"
+                          style="width:28em">
                 <option value="">-- Select a priority type --</option>
                 <c:forEach items="${availablePriorities}" var="priority">
                     <option value="${priority.type}"><c:out value="${priority.name}"/></option>
