@@ -96,6 +96,27 @@ public class ProjectConfigurationTab extends EditProjectTab {
 
     @NotNull
     @Override
+    public String getTabTitle(@NotNull HttpServletRequest request) {
+        SProject project = this.getProject(request);
+        String tabTitle = super.getTabTitle(request);
+
+        if (project != null) {
+            int count = 0;
+            Map<SProject, List<AgentPriorityDescriptor>> priorities = getPriorityMap(project);
+            for (List<AgentPriorityDescriptor> descriptors: priorities.values()){
+                count += descriptors.size();
+            }
+
+            if (count > 0){
+                tabTitle += String.format("(%d)", count);
+            }
+        }
+
+        return tabTitle;
+    }
+
+    @NotNull
+    @Override
     public List<String> getJsPaths() {
         return Collections.singletonList(
                 pluginDescriptor.getPluginResourcesPath(PLUGIN_PATH + "/js/agentPriorityDialog.js")
