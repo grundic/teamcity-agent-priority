@@ -28,13 +28,14 @@ import com.github.grundic.agentPriority.manager.AgentPriorityManager;
 import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
 import jetbrains.buildServer.controllers.admin.projects.EditProjectTab;
 import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
 import jetbrains.buildServer.web.openapi.PagePlaces;
 import jetbrains.buildServer.web.openapi.PluginDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import static com.github.grundic.agentPriority.Constants.*;
 
@@ -69,29 +70,10 @@ public class ProjectConfigurationTab extends EditProjectTab {
 
         SProject project = getProject(request);
         if (null != project) {
-            model.put("configuredPriorities", getPriorityMap(project));
+            model.put("configuredPriorities", priorityManager.configuredPerProject(project));
         }
 
         model.put("availablePriorities", priorityManager.list());
-    }
-
-    @NotNull
-    private Map<SProject, List<AgentPriorityDescriptor>> getPriorityMap(@NotNull SProject project) {
-        Map<SProject, List<AgentPriorityDescriptor>> result = new LinkedHashMap<>();
-        List<SProject> projectPath = project.getProjectPath();
-        Collections.reverse(projectPath);
-
-        for (SProject p : projectPath) {
-            List<AgentPriorityDescriptor> descriptors = new ArrayList<>();
-            for (SProjectFeatureDescriptor descriptor : p.getOwnFeaturesOfType(FEATURE_TYPE)) {
-                descriptors.add(new AgentPriorityDescriptor(priorityManager, descriptor, p));
-            }
-            if (!descriptors.isEmpty()) {
-                result.put(p, descriptors);
-            }
-        }
-
-        return result;
     }
 
     @NotNull
@@ -102,12 +84,12 @@ public class ProjectConfigurationTab extends EditProjectTab {
 
         if (project != null) {
             int count = 0;
-            Map<SProject, List<AgentPriorityDescriptor>> priorities = getPriorityMap(project);
-            for (List<AgentPriorityDescriptor> descriptors: priorities.values()){
+            Map<SProject, List<AgentPriorityDescriptor>> priorities = priorityManager.configuredPerProject(project);
+            for (List<AgentPriorityDescriptor> descriptors : priorities.values()) {
                 count += descriptors.size();
             }
 
-            if (count > 0){
+            if (count > 0) {
                 tabTitle += String.format("(%d)", count);
             }
         }
@@ -118,8 +100,9 @@ public class ProjectConfigurationTab extends EditProjectTab {
     @NotNull
     @Override
     public List<String> getJsPaths() {
-        return Collections.singletonList(
-                pluginDescriptor.getPluginResourcesPath(PLUGIN_PATH + "/js/agentPriorityDialog.js")
+        return Arrays.asList(
+                pluginDescriptor.getPluginResourcesPath(PLUGIN_PATH + "/js/agentPriorityDialog.js"),
+                pluginDescriptor.getPluginResourcesPath(PLUGIN_PATH + "/js/agentPriorityOrderDialog.js")
         );
     }
 }

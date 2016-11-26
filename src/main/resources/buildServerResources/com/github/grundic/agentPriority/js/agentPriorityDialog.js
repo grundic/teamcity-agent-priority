@@ -48,7 +48,7 @@ BS.AgentPriorityDialog = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.Abstrac
         this.showCentered();
     },
 
-    showEditDialog: function(priorityId, name, readOnly) {
+    showEditDialog: function (priorityId, name, readOnly) {
         this.enable();
         $j('#AgentPriorityTitle').text('Edit Priority');
         $j('#priorityType').hide();
@@ -117,7 +117,7 @@ BS.AgentPriority = {
         if (!confirm("Are you sure you want to delete this agent priority?")) return;
 
         BS.ajaxRequest(url, {
-            parameters: 'deletePriority=' + priorityId + "&projectId=" + projectId,
+            parameters: 'operation=deletePriority' + '&priorityId=' + priorityId + "&projectId=" + projectId,
 
             onComplete: function () {
                 $('prioritiesTable').refresh();

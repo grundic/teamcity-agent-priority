@@ -28,6 +28,7 @@ import com.github.grundic.agentPriority.manager.AgentPriorityManager;
 import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import com.github.grundic.agentPriority.prioritisation.AgentPriorityBean;
 import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
+import com.google.common.base.Splitter;
 import jetbrains.buildServer.controllers.ActionErrors;
 import jetbrains.buildServer.controllers.BaseFormXmlController;
 import jetbrains.buildServer.controllers.FormUtil;
@@ -45,9 +46,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static com.github.grundic.agentPriority.Constants.PLUGIN_NAME;
-import static com.github.grundic.agentPriority.Constants.TYPE_PARAM;
+import static com.github.grundic.agentPriority.Constants.*;
 
 /**
  * User: g.chernyshev
@@ -93,10 +96,23 @@ public class ProjectPriorityController extends BaseFormXmlController {
             return;
         }
 
-        if (request.getParameter("savePriority") != null) {
-            doSave(request, xmlResponse, project, errors);
-        } else if (request.getParameter("deletePriority") != null) {
-            doRemove(request, project);
+        String operation = request.getParameter("operation");
+        if (operation == null) {
+            errors.addError("operation", "Operation was not provided!");
+            errors.serialize(xmlResponse);
+            return;
+        }
+
+        switch (operation) {
+            case "savePriority":
+                doSave(request, xmlResponse, project, errors);
+                break;
+            case "deletePriority":
+                doRemove(request, project);
+                break;
+            case "reorderPriority":
+                doReorder(request, project);
+                break;
         }
         errors.serialize(xmlResponse);
     }
@@ -111,7 +127,7 @@ public class ProjectPriorityController extends BaseFormXmlController {
         }
 
         if (StringUtil.isEmpty(priorityBean.getPriorityId())) {
-            doCreate(request, xmlResponse, project, priorityBean);
+            doCreate(request, project, priorityBean);
         } else {
             doUpdate(request, project, priorityBean);
         }
@@ -143,9 +159,15 @@ public class ProjectPriorityController extends BaseFormXmlController {
         errors.addError(TYPE_PARAM, String.format("Unknown priority type '%s'!", priorityType));
     }
 
-    private void doCreate(@NotNull HttpServletRequest request, @NotNull Element xmlResponse, @NotNull SProject project, @NotNull AgentPriorityBean priorityBean) {
+    private void doCreate(@NotNull HttpServletRequest request, @NotNull SProject project, @NotNull AgentPriorityBean priorityBean) {
         assert null != priorityBean.getPriorityType();
-        AgentPriorityDescriptor priorityDescriptor = priorityManager.addPriority(project, priorityBean.getPriorityType(), priorityBean.getProperties());
+
+        List<AgentPriorityDescriptor> descriptors = priorityManager.configuredForProject(project);
+        int priority_order = descriptors.size() + 1;
+        Map<String, String> properties = new HashMap<>(priorityBean.getProperties());
+        properties.put(PRIORITY_ORDER, Integer.toString(priority_order));
+
+        priorityManager.addPriority(project, priorityBean.getPriorityType(), properties);
         project.persist(actionFactory.createAction(project, String.format("Agent priority %s created.", priorityBean.getPriorityType())));
 
         getOrCreateMessages(request).addMessage("priorityAdded", "Agent priority successfully created.");
@@ -160,7 +182,7 @@ public class ProjectPriorityController extends BaseFormXmlController {
     }
 
     private void doRemove(@NotNull HttpServletRequest request, @NotNull SProject project) {
-        final String priorityId = request.getParameter("deletePriority");
+        final String priorityId = request.getParameter("priorityId");
         assert null != priorityId;
         SProjectFeatureDescriptor feature = project.removeFeature(priorityId);
         if (null != feature) {
@@ -168,6 +190,35 @@ public class ProjectPriorityController extends BaseFormXmlController {
             project.persist(actionFactory.createAction(project, actionDescription));
             getOrCreateMessages(request).addMessage("priorityRemove", actionDescription);
         }
+    }
+
+    private void doReorder(HttpServletRequest request, SProject project) {
+        String order = request.getParameter(PRIORITY_ORDER);
+        if (null == order) {
+            return;
+        }
+
+        Iterable<String> ids = Splitter.on(';')
+                .trimResults()
+                .omitEmptyStrings()
+                .split(order);
+
+        int index = 0;
+        for (String id : ids) {
+            AgentPriorityDescriptor descriptor = priorityManager.findPriorityById(project, id);
+            if (null == descriptor) {
+                // TODO: log error
+                continue;
+            }
+
+            Map<String, String> params = new HashMap<>(descriptor.getParameters());
+            params.put(PRIORITY_ORDER, Integer.toString(index));
+            priorityManager.updatePriority(project, descriptor.getId(), descriptor.getAgentPriority().getType(), params);
+            index++;
+        }
+
+        project.persist(actionFactory.createAction(project, "Agent priority order was updated."));
+        getOrCreateMessages(request).addMessage("priorityUpdated", "Agent priority was updated.");
     }
 
 }

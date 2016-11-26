@@ -42,6 +42,8 @@ public class AgentPriorityBean extends BasePropertiesBean {
     private String priorityId;
     @Nullable
     private String priorityType;
+    @Nullable
+    private Nullable priorityOrder;
 
     public AgentPriorityBean() {
         super(new HashMap<>(), new HashMap<>());
@@ -67,5 +69,14 @@ public class AgentPriorityBean extends BasePropertiesBean {
 
     public void setPriorityType(@Nullable String priorityType) {
         this.priorityType = priorityType;
+    }
+
+    @Nullable
+    public Nullable getPriorityOrder() {
+        return priorityOrder;
+    }
+
+    public void setPriorityOrder(@Nullable Nullable priorityOrder) {
+        this.priorityOrder = priorityOrder;
     }
 }

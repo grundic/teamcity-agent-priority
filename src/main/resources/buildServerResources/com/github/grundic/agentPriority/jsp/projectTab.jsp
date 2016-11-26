@@ -28,36 +28,51 @@
 <jsp:useBean id="configuredPriorities" scope="request"
              type="java.util.Map<jetbrains.buildServer.serverSide.SProject, java.util.List<com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor >>"/>
 
+<bs:linkScript>
+    /js/bs/queueLikeSorter.js
+</bs:linkScript>
+
 <div class="section noMargin">
     <h2 class="noBorder">Agent priorities</h2>
     <bs:smallNote>Available ordering of build agents:<c:forEach items="${availablePriorities}" var="priority"
                                                                 varStatus="pos"><c:out value="${priority.name}"/><c:if
             test="${not pos.last}">, </c:if></c:forEach>.</bs:smallNote>
 
-    <bs:refreshable containerId="prioritiesTable" pageUrl="${pageUrl}">
 
-        <bs:messages key="priorityAdded"/>
-        <bs:messages key="priorityUpdated"/>
-        <bs:messages key="priorityRemoved"/>
+    <c:if test="${not currentProject.readOnly}">
+        <div style="display:inline-block;">
+            <forms:addButton onclick="BS.AgentPriorityDialog.showAddDialog()">Add Priority</forms:addButton>
+        </div>
+    </c:if>
 
-        <c:if test="${not currentProject.readOnly}">
-            <div>
-                <forms:addButton onclick="BS.AgentPriorityDialog.showAddDialog()">Add Priority</forms:addButton>
+    <c:forEach items="${configuredPriorities}" var="entry">
+        <c:set var="project" value="${entry.key}"/>
+        <c:set var="projectPriorities" value="${entry.value}"/>
+        <c:set var="inherited" value="${project != currentProject}"/>
+
+        <c:if test="${!inherited && projectPriorities.size() > 1}">
+            <div style="display:inline-block;">
+                <a title="Click to order" id="editAgentPriorityOrder" class="btn">
+                    <span class="icon_before icon16" style="background-repeat: no-repeat; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACYUlEQVR42o2RXUiTURjHn/Pu3XvO2bu5uU3n2tDILMukD+jCSERj0geYdBFEFBJJadJFRaPySpANIrswpYRaFxORyoQ+iCLJgi4qiOgDvNIQQSvF+W64r/eczgitvNj8w8M5D//n/M7znINghaoCg/vMKj0BwDerRF105Nve8mT8+p2ju8czftPtl/bo7A/9/sUjkUyOlg6WHfcj8/baxkRUq9RT8VaWTLgUBQPGFBw2K1Ru2nCrq67kdMvTiZ+yUW7r9nkH/wOsVEXgoR/FY0FCKBAjBqOAeVxOFk2AVLq+7Py1XeaurICMKjsGNmIZfyRYpkQxgYIxUGKCIm9Jd0+d82xOQEZbr4Rcar5jihiJgVAKWCFQsMb7qK/e3bAqwI7AUI0ioVdEEaNkAJiAvdA9FjpQXJ4TUNhwUi3aWR9VVcssNakz4j1mTGJvcbqHQrXWgZyAxp5ntuEze+ez1SwD/B/iHQlt7mAynXbqKVbIGJOF0t9Gn5DRQIueE7D/7vvxRGxh7d+WpBTi6dIXbb7JVXVQfWPkeSqm+ZYN4eicl7/zN46tCrAtONyXikaa/zUlSQKgas3nS4de5wRUdN67rMe0TgZoBnHuQmipEwQGqt780n64JSug+FzvMaSYWr8Hm6q2tIcuRFL8qlG4EvpTxCRDQqbmAU+B7fHIqT0PlgHhcNhiz7eVTP6a9zCd0yIKBp0Bnopzx9cF1jwZ42VpwXFjNF1hRb1eAp9UShdlaprTNG0C9ff3r+OcV4tbXAKYxwEsYuVi+jwZgS46YJmccVjQORjFf8ZEromYFvHmNxDCyyGqSfPRAAAAAElFTkSuQmCC'); display:block">
+                        Reorder
+                    </span>
+                </a>
             </div>
         </c:if>
 
-        <c:forEach items="${configuredPriorities}" var="entry">
-            <c:set var="project" value="${entry.key}"/>
-            <c:set var="projectPriorities" value="${entry.value}"/>
-            <c:set var="inherited" value="${project != currentProject}"/>
+        <c:if test="${inherited}">
+            <br/>
+            <p>Agent priorities inherited from <admin:editProjectLink projectId="${project.externalId}"><c:out
+                    value="${project.name}"/></admin:editProjectLink>:</p>
+        </c:if>
 
-            <c:if test="${inherited}">
-                <br/>
-                <p>Agent priorities inherited from <admin:editProjectLink projectId="${project.externalId}"><c:out
-                        value="${project.name}"/></admin:editProjectLink>:</p>
-            </c:if>
+        <bs:refreshable containerId="prioritiesTable" pageUrl="${pageUrl}">
 
-            <l:tableWithHighlighting className="parametersTable" highlightImmediately="true" style="width:40%;">
+            <bs:messages key="priorityAdded"/>
+            <bs:messages key="priorityUpdated"/>
+            <bs:messages key="priorityRemoved"/>
+
+            <l:tableWithHighlighting className="parametersTable" highlightImmediately="true" style="width:70%;">
                 <tr>
                     <th style="width: 30%">Priority</th>
                     <c:if test="${!inherited}">
@@ -94,8 +109,8 @@
                     </c:choose>
                 </c:forEach>
             </l:tableWithHighlighting>
-        </c:forEach>
-    </bs:refreshable>
+        </bs:refreshable>
+    </c:forEach>
 
 
     <bs:modalDialog formId="AgentPriority" title="Add Priority" saveCommand="BS.AgentPriorityDialog.save()"
@@ -134,7 +149,28 @@
             <input type="hidden" name="projectId" value="${currentProject.externalId}"/>
             <input type="hidden" name="priorityId" value=""/>
             <input type="hidden" name="priorityType" value=""/>
-            <input type="hidden" name="savePriority" value="save"/>
+            <input type="hidden" name="operation" value="savePriority"/>
         </div>
     </bs:modalDialog>
+
+    <c:if test="${!inherited && projectPriorities.size() > 1}">
+        <bs:reorderDialog dialogId="reorderAgentPrioritiesDialog" dialogTitle="Agent Priorities">
+                        <jsp:attribute name="sortables">
+                        <c:forEach items="${projectPriorities}" var="priority">
+                        <div class="draggable tc-icon_before icon16 tc-icon_draggable"
+                             id="ord_${priority.id}">
+                            <c:out value="${priority.agentPriority.name}"/></div>
+                        </c:forEach>
+                        </jsp:attribute>
+            <jsp:attribute name="actionsExtension">
+                        </jsp:attribute>
+        </bs:reorderDialog>
+    </c:if>
+
+    <script type="text/javascript">
+        $j(function () {
+            BS.AgentPriorityOrderDialog.createReorderDialog("${currentProject.externalId}");
+        });
+    </script>
+
 </div>

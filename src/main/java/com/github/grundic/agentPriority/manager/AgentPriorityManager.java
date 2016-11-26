@@ -26,6 +26,7 @@ package com.github.grundic.agentPriority.manager;
 
 import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
+import com.google.common.primitives.Ints;
 import jetbrains.buildServer.ExtensionsProvider;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
@@ -34,8 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static com.github.grundic.agentPriority.Constants.FEATURE_TYPE;
-import static com.github.grundic.agentPriority.Constants.TYPE_PARAM;
+import static com.github.grundic.agentPriority.Constants.*;
 
 /**
  * User: g.chernyshev
@@ -69,19 +69,61 @@ public class AgentPriorityManager {
     }
 
     @NotNull
-    public List<AgentPriorityDescriptor> configured(@NotNull SProject project) {
+    public List<AgentPriorityDescriptor> configuredForProject(@NotNull SProject project) {
         List<AgentPriorityDescriptor> priorityDescriptors = new ArrayList<>();
 
+        for (SProjectFeatureDescriptor feature : project.getOwnFeaturesOfType(FEATURE_TYPE)) {
+            AgentPriorityDescriptor descriptor = new AgentPriorityDescriptor(this, feature, project);
+            priorityDescriptors.add(descriptor);
+        }
+
+        priorityDescriptors.sort((priority1, priority2) -> {
+            String orderStr1 = priority1.getParameters().get(PRIORITY_ORDER);
+            String orderStr2 = priority2.getParameters().get(PRIORITY_ORDER);
+
+            orderStr1 = (orderStr1 == null ? "0" : orderStr1);
+            orderStr2 = (orderStr2 == null ? "0" : orderStr2);
+
+            Integer order1 = Ints.tryParse(orderStr1);
+            Integer order2 = Ints.tryParse(orderStr2);
+
+            order1 = (order1 == null ? 0 : order1);
+            order2 = (order2 == null ? 0 : order2);
+
+            return order1.compareTo(order2);
+        });
+
+        return priorityDescriptors;
+    }
+
+
+    @NotNull
+    public List<AgentPriorityDescriptor> configuredForProjectWithParents(@NotNull SProject project) {
+        List<AgentPriorityDescriptor> priorityDescriptors = new ArrayList<>();
         List<SProject> parents = project.getProjectPath();
+        Collections.reverse(parents);
 
         for (SProject p : parents) {
-            for (SProjectFeatureDescriptor feature : p.getOwnFeaturesOfType(FEATURE_TYPE)) {
-                AgentPriorityDescriptor descriptor = new AgentPriorityDescriptor(this, feature, p);
-                priorityDescriptors.add(descriptor);
-            }
+            priorityDescriptors.addAll(configuredForProject(p));
         }
 
         return priorityDescriptors;
+    }
+
+    @NotNull
+    public Map<SProject, List<AgentPriorityDescriptor>> configuredPerProject(@NotNull SProject project) {
+        Map<SProject, List<AgentPriorityDescriptor>> result = new LinkedHashMap<>();
+        List<SProject> projectPath = project.getProjectPath();
+        Collections.reverse(projectPath);
+
+        for (SProject p : projectPath) {
+            List<AgentPriorityDescriptor> descriptors = configuredForProject(p);
+            if (!descriptors.isEmpty()) {
+                result.put(p, descriptors);
+            }
+        }
+
+        return result;
     }
 
     @Nullable
@@ -103,7 +145,6 @@ public class AgentPriorityManager {
         Map<String, String> projectFeatureParams = new HashMap<>();
         projectFeatureParams.putAll(parameters);
         projectFeatureParams.put(TYPE_PARAM, priorityType);
-
         return new AgentPriorityDescriptor(this, project.addFeature(FEATURE_TYPE, projectFeatureParams), project);
     }
 

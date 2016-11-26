@@ -22,22 +22,36 @@
  * THE SOFTWARE.
  */
 
-package com.github.grundic.agentPriority;
+'use strict';
 
-/**
- * User: g.chernyshev
- * Date: 06/11/16
- * Time: 22:16
- */
-public final class Constants {
-    public final static String PLUGIN_NAME = "teamcity-agent-priority";
-    public final static String PLUGIN_TITLE = "Agent priority";
+BS.AgentPriorityOrderDialog = {
+    createReorderDialog: function (projectId) {
+        var $reorderAgentPrioritiesDialog = $j("#reorderAgentPrioritiesDialog");
 
-    public static final String FEATURE_TYPE = "agentPriority";
-    public static final String ID_PARAM = "priorityId";
-    public static final String TYPE_PARAM = "priorityType";
-    public static final String PRIORITY_ORDER = "priorityOrder";
+        var form = BS.createReorderDialog('reorderAgentPrioritiesDialog', $j("#sortableList"), function (order) {
+            form.setDisabled(true);
 
-    public final static String PLUGIN_PACKAGE = Constants.class.getPackage().getName();
-    public final static String PLUGIN_PATH = PLUGIN_PACKAGE.replace('.', '/');
-}
+            BS.ajaxRequest(window["base_uri"] + "/admin/teamcity-agent-priority/priorities.html", {
+                parameters: {
+                    operation: 'reorderPriority',
+                    priorityOrder: order,
+                    projectId: projectId
+                },
+                method: "POST",
+                onComplete: function () {
+                    form.setDisabled(false);
+                    form.close();
+                    BS.reload();
+                }
+            });
+        });
+
+        $reorderAgentPrioritiesDialog.bind("closeDialog", function () {
+            form.resetState();
+        });
+
+        $j('#editAgentPriorityOrder').click(function () {
+            form.showCentered();
+        });
+    }
+};

@@ -80,7 +80,7 @@ public class PriorityAgentsFilterTest {
 
         when(projectManager.findBuildTypeById(anyString())).thenReturn(build);
         when(build.getProject()).thenReturn(project);
-        when(priorityManager.configured(any(SProject.class))).thenReturn(descriptors);
+        when(priorityManager.configuredForProjectWithParents(any(SProject.class))).thenReturn(descriptors);
 
         when(context.getAgentsForStartingBuild()).thenReturn(agents);
 
