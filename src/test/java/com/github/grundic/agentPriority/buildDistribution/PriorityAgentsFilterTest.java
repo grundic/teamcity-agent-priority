@@ -27,16 +27,17 @@ package com.github.grundic.agentPriority.buildDistribution;
 import com.github.grundic.agentPriority.manager.AgentPriorityManager;
 import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
+import com.github.grundic.agentPriority.prioritisation.impl.ByBuildStatus;
 import com.github.grundic.agentPriority.prioritisation.impl.ByConfigurationParameter;
 import com.github.grundic.agentPriority.prioritisation.impl.ByName;
-import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.SBuildAgent;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.messages.Status;
+import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterContext;
 import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterResult;
+import jetbrains.buildServer.util.ItemProcessor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.mockito.stubbing.Stubber;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -59,6 +60,12 @@ public class PriorityAgentsFilterTest {
 
     private List<AgentPriorityDescriptor> descriptors;
 
+    private SBuildAgent agent1;
+    private SBuildAgent agent2;
+    private SBuildAgent agent3;
+    private SBuildAgent agent4;
+    private SBuildAgent agent5;
+
     @BeforeMethod
     public void setUp() throws Exception {
         priorityManager = mock(AgentPriorityManager.class);
@@ -69,11 +76,11 @@ public class PriorityAgentsFilterTest {
 
 
         Collection<SBuildAgent> agents = new ArrayList<>();
-        SBuildAgent agent1 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
-        SBuildAgent agent2 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
-        SBuildAgent agent3 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
-        SBuildAgent agent4 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
-        SBuildAgent agent5 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
+        agent1 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
+        agent2 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
+        agent3 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
+        agent4 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
+        agent5 = mock(SBuildAgent.class, RETURNS_DEEP_STUBS);
         agents.addAll(Arrays.asList(agent2, agent5, agent1, agent4, agent3));
 
         descriptors = new ArrayList<>();
@@ -146,6 +153,7 @@ public class PriorityAgentsFilterTest {
         AgentsFilterResult result = filter.filterAgents(context);
 
         List<String> names = new ArrayList<>();
+        Assert.assertNotNull(result.getFilteredConnectedAgents());
         for (SBuildAgent agent : result.getFilteredConnectedAgents()) {
             names.add(agent.getName());
         }
@@ -153,4 +161,59 @@ public class PriorityAgentsFilterTest {
         Assert.assertEquals(names, Arrays.asList("agent5", "agent4", "agent3", "agent2", "agent1"));
     }
 
+    @Test
+    public void testFilterAgentsByBuildStatus() throws Exception {
+        AgentPriorityDescriptor byConfigurationParameter = mock(AgentPriorityDescriptor.class);
+        descriptors.add(byConfigurationParameter);
+        BuildHistory buildHistory = mock(BuildHistory.class);
+
+        SFinishedBuild finishedBuild1 = mock(SFinishedBuild.class);
+        SFinishedBuild finishedBuild2 = mock(SFinishedBuild.class);
+        SFinishedBuild finishedBuild3 = mock(SFinishedBuild.class);
+        Status buildStatus1 = Status.FAILURE;
+        Status buildStatus2 = Status.ERROR;
+        Status buildStatus3 = Status.NORMAL;
+
+        when(finishedBuild1.getAgent()).thenReturn(agent1);
+        when(finishedBuild2.getAgent()).thenReturn(agent1);
+        when(finishedBuild3.getAgent()).thenReturn(agent1);
+
+        when(finishedBuild1.getBuildStatus()).thenReturn(buildStatus1);
+        when(finishedBuild2.getBuildStatus()).thenReturn(buildStatus2);
+        when(finishedBuild3.getBuildStatus()).thenReturn(buildStatus3);
+
+        List<SFinishedBuild> history = new ArrayList<>();
+        history.addAll(Arrays.asList(finishedBuild1, finishedBuild2, finishedBuild3));
+
+        Stubber stubber = doAnswer(invocation -> {
+            Object[] args = invocation.getArguments();
+            ItemProcessor<SFinishedBuild> processor = (ItemProcessor<SFinishedBuild>) args[5];
+
+            for (SFinishedBuild build: history) {
+                boolean result = processor.processItem(build);
+                if (!result) {
+                    break;
+                }
+            }
+
+            return null;
+
+        });
+
+        stubber.when(buildHistory).processEntries(anyString(), any(), anyBoolean(), anyBoolean(), anyBoolean(), any());
+
+        AgentPriority priority = new ByBuildStatus(buildHistory);
+        when(byConfigurationParameter.getAgentPriority()).thenReturn(priority);
+
+        PriorityAgentsFilter filter = new PriorityAgentsFilter(priorityManager, projectManager);
+        AgentsFilterResult result = filter.filterAgents(context);
+
+        List<String> names = new ArrayList<>();
+        Assert.assertNotNull(result.getFilteredConnectedAgents());
+        for (SBuildAgent agent : result.getFilteredConnectedAgents()) {
+            names.add(agent.getName());
+        }
+
+        Assert.assertEquals(names, Arrays.asList("agent2", "agent5", "agent4", "agent3", "agent1"));
+    }
 }

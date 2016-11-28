@@ -27,6 +27,7 @@ package com.github.grundic.agentPriority.prioritisation;
 import com.google.common.base.Function;
 import jetbrains.buildServer.serverSide.PropertiesProcessor;
 import jetbrains.buildServer.serverSide.SBuildAgent;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.ServerExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,6 +46,9 @@ public abstract class AgentPriority implements Function<SBuildAgent, Comparable>
     @Nullable
     private Map<String, String> parameters;
 
+    @Nullable
+    private SBuildType buildType;
+
     @NotNull
     protected Map<String, String> getParameters() {
         if (null == parameters) {
@@ -55,6 +59,15 @@ public abstract class AgentPriority implements Function<SBuildAgent, Comparable>
 
     public void setParameters(@Nullable Map<String, String> parameters) {
         this.parameters = parameters;
+    }
+
+    @Nullable
+    public SBuildType getBuildType() {
+        return buildType;
+    }
+
+    public void setBuildType(@NotNull SBuildType buildType) {
+        this.buildType = buildType;
     }
 
     @NotNull

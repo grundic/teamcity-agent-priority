@@ -25,12 +25,10 @@
 package com.github.grundic.agentPriority.buildDistribution;
 
 import com.github.grundic.agentPriority.manager.AgentPriorityManager;
+import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
 import com.google.common.collect.Ordering;
-import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.SBuildAgent;
-import jetbrains.buildServer.serverSide.SBuildType;
-import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterContext;
 import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterResult;
 import jetbrains.buildServer.serverSide.buildDistribution.StartingBuildAgentsFilter;
@@ -62,7 +60,6 @@ public class PriorityAgentsFilter implements StartingBuildAgentsFilter {
     @NotNull
     @Override
     public AgentsFilterResult filterAgents(@NotNull AgentsFilterContext context) {
-
         SBuildType buildType = projectManager.findBuildTypeById(context.getStartingBuild().getBuildConfiguration().getId());
         if (null == buildType) {
             // TODO add logging here.
@@ -77,7 +74,9 @@ public class PriorityAgentsFilter implements StartingBuildAgentsFilter {
 
         Ordering<SBuildAgent> agentOrdering = Ordering.allEqual().nullsLast();
         for (AgentPriorityDescriptor priorityDescriptor : configured) {
-            agentOrdering = agentOrdering.compound(Ordering.natural().nullsLast().onResultOf(priorityDescriptor.getAgentPriority()));
+            AgentPriority priority = priorityDescriptor.getAgentPriority();
+            priority.setBuildType(buildType);
+            agentOrdering = agentOrdering.compound(Ordering.natural().nullsLast().onResultOf(priority));
         }
 
         final AgentsFilterResult result = new AgentsFilterResult();

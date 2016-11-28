@@ -34,7 +34,7 @@
     <bean class="com.github.grundic.agentPriority.manager.AgentPriorityManager"/>
 
     <!-- Agent priority implementations -->
-    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByBuildResult"/>
+    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByBuildStatus"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByConfigurationParameter"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByCpuIndex"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByName"/>
