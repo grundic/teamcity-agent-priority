@@ -102,8 +102,13 @@ BS.AgentPriorityDialog = OO.extend(BS.PluginPropertiesForm, OO.extend(BS.Abstrac
                     form.enable();
                 } else {
                     if (!BS.XMLResponse.processRedirect(responseXML)) {
-                        $('prioritiesTable').refresh();
-                        BS.AgentPriorityDialog.close();
+                        var $prioritiesTable = $('prioritiesTable');
+                        if ($prioritiesTable) {
+                            $prioritiesTable.refresh();
+                            BS.AgentPriorityDialog.close();
+                        } else {
+                            location.reload();
+                        }
                     }
                 }
             }
