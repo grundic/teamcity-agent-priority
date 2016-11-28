@@ -24,9 +24,14 @@
 <%@ include file="/include.jsp" %>
 <jsp:useBean id="currentProject" type="jetbrains.buildServer.serverSide.SProject" scope="request"/>
 <jsp:useBean id="availablePriorities" scope="request"
-             type="java.util.Collection<com.github.grundic.agentPriority.prioritisation.AgentPriority >"/>
+             type="java.util.Collection<com.github.grundic.agentPriority.prioritisation.AgentPriority>"/>
 <jsp:useBean id="configuredPriorities" scope="request"
-             type="java.util.Map<jetbrains.buildServer.serverSide.SProject, java.util.List<com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor >>"/>
+             type="java.util.Map<jetbrains.buildServer.serverSide.SProject, java.util.List<com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor>>"/>
+<jsp:useBean id="availableBuilds" scope="request"
+             type="java.util.List<jetbrains.buildServer.serverSide.SBuildType>"/>
+
+<c:url var="prioritiesUrl" value="/admin/teamcity-agent-priority/priorities.html"/>
+
 
 <bs:linkScript>
     /js/bs/queueLikeSorter.js
@@ -53,7 +58,8 @@
         <c:if test="${!inherited && projectPriorities.size() > 1}">
             <div style="display:inline-block;">
                 <a title="Click to order" id="editAgentPriorityOrder" class="btn">
-                    <span class="icon_before icon16" style="background-repeat: no-repeat; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACYUlEQVR42o2RXUiTURjHn/Pu3XvO2bu5uU3n2tDILMukD+jCSERj0geYdBFEFBJJadJFRaPySpANIrswpYRaFxORyoQ+iCLJgi4qiOgDvNIQQSvF+W64r/eczgitvNj8w8M5D//n/M7znINghaoCg/vMKj0BwDerRF105Nve8mT8+p2ju8czftPtl/bo7A/9/sUjkUyOlg6WHfcj8/baxkRUq9RT8VaWTLgUBQPGFBw2K1Ru2nCrq67kdMvTiZ+yUW7r9nkH/wOsVEXgoR/FY0FCKBAjBqOAeVxOFk2AVLq+7Py1XeaurICMKjsGNmIZfyRYpkQxgYIxUGKCIm9Jd0+d82xOQEZbr4Rcar5jihiJgVAKWCFQsMb7qK/e3bAqwI7AUI0ioVdEEaNkAJiAvdA9FjpQXJ4TUNhwUi3aWR9VVcssNakz4j1mTGJvcbqHQrXWgZyAxp5ntuEze+ez1SwD/B/iHQlt7mAynXbqKVbIGJOF0t9Gn5DRQIueE7D/7vvxRGxh7d+WpBTi6dIXbb7JVXVQfWPkeSqm+ZYN4eicl7/zN46tCrAtONyXikaa/zUlSQKgas3nS4de5wRUdN67rMe0TgZoBnHuQmipEwQGqt780n64JSug+FzvMaSYWr8Hm6q2tIcuRFL8qlG4EvpTxCRDQqbmAU+B7fHIqT0PlgHhcNhiz7eVTP6a9zCd0yIKBp0Bnopzx9cF1jwZ42VpwXFjNF1hRb1eAp9UShdlaprTNG0C9ff3r+OcV4tbXAKYxwEsYuVi+jwZgS46YJmccVjQORjFf8ZEromYFvHmNxDCyyGqSfPRAAAAAElFTkSuQmCC'); display:block">
+                    <span class="icon_before icon16"
+                          style="background-repeat: no-repeat; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACYUlEQVR42o2RXUiTURjHn/Pu3XvO2bu5uU3n2tDILMukD+jCSERj0geYdBFEFBJJadJFRaPySpANIrswpYRaFxORyoQ+iCLJgi4qiOgDvNIQQSvF+W64r/eczgitvNj8w8M5D//n/M7znINghaoCg/vMKj0BwDerRF105Nve8mT8+p2ju8czftPtl/bo7A/9/sUjkUyOlg6WHfcj8/baxkRUq9RT8VaWTLgUBQPGFBw2K1Ru2nCrq67kdMvTiZ+yUW7r9nkH/wOsVEXgoR/FY0FCKBAjBqOAeVxOFk2AVLq+7Py1XeaurICMKjsGNmIZfyRYpkQxgYIxUGKCIm9Jd0+d82xOQEZbr4Rcar5jihiJgVAKWCFQsMb7qK/e3bAqwI7AUI0ioVdEEaNkAJiAvdA9FjpQXJ4TUNhwUi3aWR9VVcssNakz4j1mTGJvcbqHQrXWgZyAxp5ntuEze+ez1SwD/B/iHQlt7mAynXbqKVbIGJOF0t9Gn5DRQIueE7D/7vvxRGxh7d+WpBTi6dIXbb7JVXVQfWPkeSqm+ZYN4eicl7/zN46tCrAtONyXikaa/zUlSQKgas3nS4de5wRUdN67rMe0TgZoBnHuQmipEwQGqt780n64JSug+FzvMaSYWr8Hm6q2tIcuRFL8qlG4EvpTxCRDQqbmAU+B7fHIqT0PlgHhcNhiz7eVTP6a9zCd0yIKBp0Bnopzx9cF1jwZ42VpwXFjNF1hRb1eAp9UShdlaprTNG0C9ff3r+OcV4tbXAKYxwEsYuVi+jwZgS46YJmccVjQORjFf8ZEromYFvHmNxDCyyGqSfPRAAAAAElFTkSuQmCC'); display:block">
                         Reorder
                     </span>
                 </a>
@@ -100,7 +106,7 @@
                                     <c:if test="${not currentProject.readOnly}">
                                         <td class="edit">
                                             <a href="#"
-                                               onclick="BS.AgentPriority.deletePriority('/admin/teamcity-agent-priority/priorities.html', '${priority.id}', '${currentProject.externalId}')">Delete</a>
+                                               onclick="BS.AgentPriority.deletePriority('${prioritiesUrl}', '${priority.id}', '${currentProject.externalId}')">Delete</a>
                                         </td>
                                     </c:if>
                                 </c:if>
@@ -109,13 +115,29 @@
                     </c:choose>
                 </c:forEach>
             </l:tableWithHighlighting>
+
+
+            <div style="margin-top: 30px;">
+                <p>Here you can view the final order of agents for the selected build.</p>
+                <forms:select name="buildSelector" enableFilter="true"
+                              onchange="BS.AgentPriority.getBuildAgentsForBuild('${prioritiesUrl}', this, '${currentProject.externalId}')"
+                              className="longField">
+                    <option value="">-- Select build for viewing agent order --</option>
+                    <c:forEach items="${availableBuilds}" var="build">
+                        <option value="${build.buildTypeId}"><c:out value="${build.name}"/></option>
+                    </c:forEach>
+                </forms:select>
+
+                <ol id="agentsForBuild"></ol>
+            </div>
+
         </bs:refreshable>
     </c:forEach>
 
 
     <bs:modalDialog formId="AgentPriority" title="Add Priority" saveCommand="BS.AgentPriorityDialog.save()"
                     closeCommand="BS.AgentPriorityDialog.close()"
-                    action="/admin/teamcity-agent-priority/priorities.html">
+                    action="${prioritiesUrl}">
         <table class="runnerFormTable" style="width: 99%;">
             <tr>
                 <td>

@@ -26,10 +26,15 @@ package com.github.grundic.agentPriority.manager;
 
 import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
+import com.google.common.collect.Ordering;
 import com.google.common.primitives.Ints;
+import jetbrains.buildServer.BuildAgent;
 import jetbrains.buildServer.ExtensionsProvider;
+import jetbrains.buildServer.serverSide.SBuildAgent;
+import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
+import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,6 +54,23 @@ public class AgentPriorityManager {
 
     public AgentPriorityManager(@NotNull ExtensionsProvider extensionsProvider) {
         this.extensionsProvider = extensionsProvider;
+    }
+
+    @NotNull
+    public List<SBuildAgent> sort(@NotNull Collection<SBuildAgent> agents, @NotNull SProject project, @NotNull SBuildType buildType){
+        List<AgentPriorityDescriptor> configured = configuredForProjectWithParents(project);
+        if (configured.isEmpty()) {
+            return new ArrayList<>(agents);
+        }
+
+        Ordering<SBuildAgent> agentOrdering = Ordering.allEqual().nullsLast();
+        for (AgentPriorityDescriptor priorityDescriptor : configured) {
+            AgentPriority priority = priorityDescriptor.getAgentPriority();
+            priority.setBuildType(buildType);
+            agentOrdering = agentOrdering.compound(Ordering.natural().nullsLast().onResultOf(priority));
+        }
+
+        return agentOrdering.sortedCopy(agents);
     }
 
     @NotNull

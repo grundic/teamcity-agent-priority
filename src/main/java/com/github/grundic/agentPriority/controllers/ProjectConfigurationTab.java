@@ -71,6 +71,7 @@ public class ProjectConfigurationTab extends EditProjectTab {
         SProject project = getProject(request);
         if (null != project) {
             model.put("configuredPriorities", priorityManager.configuredPerProject(project));
+            model.put("availableBuilds", project.getOwnBuildTypes());
         }
 
         model.put("availablePriorities", priorityManager.list());

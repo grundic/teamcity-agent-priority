@@ -34,13 +34,11 @@ import jetbrains.buildServer.controllers.BaseFormXmlController;
 import jetbrains.buildServer.controllers.FormUtil;
 import jetbrains.buildServer.controllers.SimpleView;
 import jetbrains.buildServer.controllers.admin.projects.PluginPropertiesUtil;
-import jetbrains.buildServer.serverSide.ConfigActionFactory;
-import jetbrains.buildServer.serverSide.ProjectManager;
-import jetbrains.buildServer.serverSide.SProject;
-import jetbrains.buildServer.serverSide.SProjectFeatureDescriptor;
+import jetbrains.buildServer.serverSide.*;
 import jetbrains.buildServer.util.StringUtil;
 import jetbrains.buildServer.web.openapi.WebControllerManager;
 import org.jdom.Element;
+import org.jdom.Text;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -112,6 +110,9 @@ public class ProjectPriorityController extends BaseFormXmlController {
                 break;
             case "reorderPriority":
                 doReorder(request, project);
+                break;
+            case "getAgentsForBuild":
+                getAgentsForBuild(request, response, xmlResponse, project);
                 break;
         }
         errors.serialize(xmlResponse);
@@ -221,4 +222,26 @@ public class ProjectPriorityController extends BaseFormXmlController {
         getOrCreateMessages(request).addMessage("priorityUpdated", "Agent priority was updated.");
     }
 
+    private void getAgentsForBuild(HttpServletRequest request, HttpServletResponse response, Element xmlResponse, SProject project) {
+        String buildTypeId = request.getParameter("buildTypeId");
+        if (null == buildTypeId) {
+            return;
+        }
+
+        SBuildType buildType = projectManager.findBuildTypeById(buildTypeId);
+        if (null == buildType) {
+            return;
+        }
+
+        List<SBuildAgent> originalAgents = buildType.getCanRunAndCompatibleAgents(false);
+        List<SBuildAgent> sortedAgents = priorityManager.sort(originalAgents, buildType.getProject(), buildType);
+
+        for (SBuildAgent agent : sortedAgents) {
+            final Element buildAgent = new Element("buildAgent");
+            buildAgent.setContent(new Text(agent.getName()));
+            buildAgent.setAttribute("id", Integer.toString(agent.getId()));
+
+            xmlResponse.addContent(buildAgent);
+        }
+    }
 }

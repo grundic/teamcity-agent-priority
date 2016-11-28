@@ -128,5 +128,34 @@ BS.AgentPriority = {
                 $('prioritiesTable').refresh();
             }
         });
+    },
+
+    getBuildAgentsForBuild: function (url, selector, projectId) {
+        var $agentsForBuild = $j('#agentsForBuild');
+        $agentsForBuild.empty();
+
+        if (selector.selectedIndex > 0) {
+            var buildTypeId = selector.options[selector.selectedIndex].value;
+
+            BS.ajaxRequest(url, {
+                parameters: 'operation=getAgentsForBuild' + '&buildTypeId=' + buildTypeId + "&projectId=" + projectId,
+
+                onComplete: function (transport) {
+                    var xml = transport.responseXML;
+                    if (xml) {
+                        var agents = xml.getElementsByTagName("buildAgent");
+
+                        for (var i = 0; i < agents.length; i++) {
+                            var agent = agents[i];
+                            var agentTitle = agent.textContent;
+                            var agentId = agent.getAttribute("id");
+                            console.log(agent);
+
+                            $agentsForBuild.append('<li><a href="/agentDetails.html?id=' + agentId + '">' + agentTitle + '</a></li>');
+                        }
+                    }
+                }
+            });
+        }
     }
 };

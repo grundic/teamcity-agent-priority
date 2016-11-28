@@ -67,20 +67,15 @@ public class PriorityAgentsFilter implements StartingBuildAgentsFilter {
         }
 
         SProject project = buildType.getProject();
-        List<AgentPriorityDescriptor> configured = priorityManager.configuredForProjectWithParents(project);
-        if (configured.isEmpty()) {
-            return new AgentsFilterResult();
-        }
 
-        Ordering<SBuildAgent> agentOrdering = Ordering.allEqual().nullsLast();
-        for (AgentPriorityDescriptor priorityDescriptor : configured) {
-            AgentPriority priority = priorityDescriptor.getAgentPriority();
-            priority.setBuildType(buildType);
-            agentOrdering = agentOrdering.compound(Ordering.natural().nullsLast().onResultOf(priority));
-        }
+        List<SBuildAgent> agents = priorityManager.sort(
+                context.getAgentsForStartingBuild(),
+                project,
+                buildType
+        );
 
         final AgentsFilterResult result = new AgentsFilterResult();
-        result.setFilteredConnectedAgents(agentOrdering.sortedCopy(context.getAgentsForStartingBuild()));
+        result.setFilteredConnectedAgents(agents);
         return result;
     }
 }
