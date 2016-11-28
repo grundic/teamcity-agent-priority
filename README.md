@@ -31,6 +31,9 @@ Multiple priorities could be selected and reordered.
 For your convenience, there is a possibility to check prioritization: select the build for which you would like to see
 ordered agent and you would see agents in sorted order.
 
+![demo](https://github.com/grundic/teamcity-agent-priority/blob/master/media/example.png?raw=true)
+
+
 License
 -------
 [MIT](https://github.com/grundic/teamcity-agent-priority/blob/master/LICENSE)
