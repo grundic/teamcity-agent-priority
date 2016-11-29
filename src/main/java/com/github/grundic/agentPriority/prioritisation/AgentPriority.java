@@ -50,19 +50,19 @@ public abstract class AgentPriority implements Function<SBuildAgent, Comparable>
     private SBuildType buildType;
 
     @NotNull
-    protected Map<String, String> getParameters() {
+    public Map<String, String> getParameters() {
         if (null == parameters) {
             return Collections.emptyMap();
         }
         return parameters;
     }
 
-    public void setParameters(@Nullable Map<String, String> parameters) {
+    void setParameters(@Nullable Map<String, String> parameters) {
         this.parameters = parameters;
     }
 
     @Nullable
-    public SBuildType getBuildType() {
+    protected SBuildType getBuildType() {
         return buildType;
     }
 
