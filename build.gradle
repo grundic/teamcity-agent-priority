@@ -13,7 +13,7 @@ apply plugin: 'java'
 apply plugin: 'com.github.rodm.teamcity-server'
 
 group = 'com.github.grundic'
-version = '1.0.0'
+version = '1.0.1'
 
 repositories {
     mavenCentral()
