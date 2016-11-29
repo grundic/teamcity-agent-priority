@@ -63,7 +63,16 @@ public class ByConfigurationParameter extends AgentPriority {
             return null;
         }
 
-        String value = buildAgent.getConfigurationParameters().get(parameterName);
-        return Ints.tryParse(value);
+        String valueStr = buildAgent.getConfigurationParameters().get(parameterName);
+        if (null == valueStr) {
+            return null;
+        }
+
+        Integer value = Ints.tryParse(valueStr);
+        if (null == value) {
+            return null;
+        }
+
+        return -(value);
     }
 }
