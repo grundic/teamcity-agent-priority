@@ -37,6 +37,7 @@ import org.junit.Assert;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
@@ -66,12 +67,15 @@ public abstract class AbstractAgentPriorityTest {
     SBuildAgent agent6;
 
 
-    AgentPriorityManager priorityManager = spy(new AgentPriorityManager(mock(ExtensionsProvider.class)));
-    AgentsFilterContext context = mock(AgentsFilterContext.class, RETURNS_DEEP_STUBS);
+    private AgentPriorityManager priorityManager = spy(new AgentPriorityManager(mock(ExtensionsProvider.class)));
+    private AgentsFilterContext context = mock(AgentsFilterContext.class, RETURNS_DEEP_STUBS);
 
     private ProjectManager projectManager = mock(ProjectManager.class);
 
-    PriorityAgentsFilter filter = new PriorityAgentsFilter(priorityManager, projectManager);
+    private PriorityAgentsFilter filter = new PriorityAgentsFilter(priorityManager, projectManager);
+
+    @DataProvider
+    public abstract Object[][] testData();
 
     void initMocks() {
         MockitoAnnotations.initMocks(this);
