@@ -57,6 +57,6 @@ public class ByCpuIndex extends AgentPriority {
             return null;
         }
 
-        return buildAgent.getCpuBenchmarkIndex();
+        return -(buildAgent.getCpuBenchmarkIndex());
     }
 }

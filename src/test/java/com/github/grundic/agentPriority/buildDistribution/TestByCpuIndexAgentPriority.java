@@ -26,13 +26,20 @@ package com.github.grundic.agentPriority.buildDistribution;
 
 import com.github.grundic.agentPriority.prioritisation.AgentPriority;
 import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
+import com.github.grundic.agentPriority.prioritisation.impl.ByCpuIndex;
 import com.github.grundic.agentPriority.prioritisation.impl.ByName;
+import jetbrains.buildServer.serverSide.SBuildAgent;
+import jetbrains.buildServer.serverSide.SProject;
+import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterResult;
+import org.junit.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -41,18 +48,18 @@ import static org.mockito.Mockito.*;
  * Date: 29/11/16
  * Time: 14:31
  */
-public class TestByNameAgentPriority extends AbstractAgentPriorityTest {
+public class TestByCpuIndexAgentPriority extends AbstractAgentPriorityTest {
     @Override
     @BeforeMethod
     public void setUp() throws Exception {
         super.setUp();
 
-        when(agent1.getName()).thenReturn("agent1");
-        when(agent2.getName()).thenReturn("agent2");
-        when(agent3.getName()).thenReturn("agent3");
-        when(agent4.getName()).thenReturn("Agent4"); // capital
-        when(agent5.getName()).thenReturn("agent5");
-        when(agent6.getName()).thenReturn("agent6");
+        when(agent1.getCpuBenchmarkIndex()).thenReturn(1001);
+        when(agent2.getCpuBenchmarkIndex()).thenReturn(999);
+        when(agent3.getCpuBenchmarkIndex()).thenReturn(710);
+        when(agent4.getCpuBenchmarkIndex()).thenReturn(-10);
+        when(agent5.getCpuBenchmarkIndex()).thenReturn(311);
+        when(agent6.getCpuBenchmarkIndex()).thenReturn(0);
     }
 
 
@@ -60,36 +67,20 @@ public class TestByNameAgentPriority extends AbstractAgentPriorityTest {
     public Object[][] testData() {
         initMocks();
 
-        AgentPriority byNameCaseSensitive = spy(new ByName());
-        AgentPriority byNameCaseInsensitive = spy(new ByName());
+        AgentPriority byCpuIndex = spy(new ByCpuIndex());
 
-        doReturn(new HashMap<String, String>() {{
-            put("caseInsensitive", "true");
-        }}).when(byNameCaseInsensitive).getParameters();
-
-        AgentPriorityDescriptor descriptorCaseSensitive = mock(AgentPriorityDescriptor.class);
-        when(descriptorCaseSensitive.getAgentPriority()).thenReturn(byNameCaseSensitive);
-
-        AgentPriorityDescriptor descriptorCaseInsensitive = mock(AgentPriorityDescriptor.class);
-        when(descriptorCaseInsensitive.getAgentPriority()).thenReturn(byNameCaseInsensitive);
+        AgentPriorityDescriptor descriptor = mock(AgentPriorityDescriptor.class);
+        when(descriptor.getAgentPriority()).thenReturn(byCpuIndex);
 
         return new Object[][]{
                 // |    DESCRIPTOR        |  GIVEN AGENTS         |  EXPECTED ORDERED AGENTS    |
-                {descriptorCaseSensitive, Collections.emptyList(), Collections.emptyList()},
-                {descriptorCaseSensitive, Collections.singletonList(agent3), Collections.singletonList(agent3)},
+                {descriptor, Collections.emptyList(), Collections.emptyList()},
+                {descriptor, Collections.singletonList(agent3), Collections.singletonList(agent3)},
                 {
-                        descriptorCaseSensitive,
+                        descriptor,
                         Arrays.asList(agent5, agent2, agent6, agent1, agent3, agent4),
-                        Arrays.asList(agent4, agent1, agent2, agent3, agent5, agent6)
+                        Arrays.asList(agent1, agent2, agent3, agent5, agent6, agent4)
                 },
-
-                {descriptorCaseInsensitive, Collections.emptyList(), Collections.emptyList()},
-                {descriptorCaseInsensitive, Collections.singletonList(agent3), Collections.singletonList(agent3)},
-                {
-                        descriptorCaseInsensitive,
-                        Arrays.asList(agent5, agent2, agent6, agent1, agent3, agent4),
-                        Arrays.asList(agent1, agent2, agent3, agent4, agent5, agent6)
-                }
         };
     }
 }

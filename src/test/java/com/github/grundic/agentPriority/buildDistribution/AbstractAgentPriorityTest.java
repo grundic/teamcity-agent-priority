@@ -25,15 +25,22 @@
 package com.github.grundic.agentPriority.buildDistribution;
 
 import com.github.grundic.agentPriority.manager.AgentPriorityManager;
+import com.github.grundic.agentPriority.prioritisation.AgentPriorityDescriptor;
 import jetbrains.buildServer.ExtensionsProvider;
 import jetbrains.buildServer.serverSide.ProjectManager;
 import jetbrains.buildServer.serverSide.SBuildAgent;
 import jetbrains.buildServer.serverSide.SBuildType;
 import jetbrains.buildServer.serverSide.SProject;
 import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterContext;
+import jetbrains.buildServer.serverSide.buildDistribution.AgentsFilterResult;
+import org.junit.Assert;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -77,5 +84,16 @@ public abstract class AbstractAgentPriorityTest {
 
         when(projectManager.findBuildTypeById(anyString())).thenReturn(buildType);
         when(buildType.getProject()).thenReturn(project);
+    }
+
+    @Test(dataProvider = "testData")
+    void testFromTestDataProvider(AgentPriorityDescriptor descriptor, List<SBuildAgent> agentsForStartingBuild, List<SBuildAgent> expectedAgents) {
+        doReturn(Collections.singletonList(descriptor)).when(priorityManager).configuredForProjectWithParents(any(SProject.class));
+
+        when(context.getAgentsForStartingBuild()).thenReturn(agentsForStartingBuild);
+        AgentsFilterResult result = filter.filterAgents(context);
+
+        List<SBuildAgent> actualAgents = result.getFilteredConnectedAgents();
+        Assert.assertEquals(expectedAgents, actualAgents);
     }
 }
