@@ -111,15 +111,15 @@ public class ByBuildStatus extends AgentPriority {
     }
 
     @NotNull
-    private Integer getValue(@NotNull String name, @NotNull Integer defaultValue){
+    private Integer getValue(@NotNull String name, @NotNull Integer defaultValue) {
         String strValue = getParameters().get(name);
         if (null == strValue) {
             return defaultValue;
         }
 
         Integer value = Ints.tryParse(strValue);
-        if (null == value){
-             return defaultValue;
+        if (null == value) {
+            return defaultValue;
         } else {
             return value;
         }
@@ -167,6 +167,8 @@ class BuildStatusWeightCalculator implements ItemProcessor<SFinishedBuild> {
 
     @Override
     public boolean processItem(SFinishedBuild build) {
+        index++;
+
         if (build.getAgent() != buildAgent) {
             return true;
         }
@@ -183,7 +185,6 @@ class BuildStatusWeightCalculator implements ItemProcessor<SFinishedBuild> {
             weight += failedScore * coefficient;
         }
 
-        index++;
         return true;
     }
 
