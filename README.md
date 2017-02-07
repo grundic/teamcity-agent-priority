@@ -8,6 +8,8 @@ This plugin gives you a possibility to prioritize your build agents
 by different criteria, so whenever the build starts, available agent 
 with higher weight will be used.
 
+:panda_face: The plugin requires Teamcity version **10+** for correct functionality, as it uses some recent API.
+
 Installation
 ------------
 To install plugin [download zip archive](https://github.com/grundic/teamcity-agent-priority/releases)
