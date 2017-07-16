@@ -149,7 +149,6 @@ BS.AgentPriority = {
                             var agent = agents[i];
                             var agentTitle = agent.textContent;
                             var agentId = agent.getAttribute("id");
-                            console.log(agent);
 
                             $agentsForBuild.append('<li><a href="/agentDetails.html?id=' + agentId + '">' + agentTitle + '</a></li>');
                         }

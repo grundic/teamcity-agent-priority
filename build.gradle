@@ -13,7 +13,7 @@ apply plugin: 'java'
 apply plugin: 'com.github.rodm.teamcity-server'
 
 group = 'com.github.grundic'
-version = '1.0.1'
+version = '1.0.2'
 
 repositories {
     mavenCentral()
@@ -27,7 +27,7 @@ repositories {
 }
 
 ext {
-    teamcityVersion = System.properties['teamcity.version'] ?: '10.0.2'
+    teamcityVersion = System.properties['teamcity.version'] ?: '10.0.3'
     teamcityDir = "${System.properties['user.home']}/.teamcity.d"
     java8Home = project.hasProperty('java8.home') ? property('java8.home') : '/Library/Java/JavaVirtualMachines/jdk1.8.0_65.jdk/Contents/Home'
     serverOpts = "-DTC.res.disableAll=true " +
@@ -47,7 +47,7 @@ dependencies {
      * in order to be able to build plugin:
      *
      * mvn install:install-file -Dfile=webapps/ROOT/WEB-INF/lib/web.jar\
-     * -DgroupId=org.jetbrains.teamcity -DartifactId=web -Dversion=10.0.2 -Dpackaging=jar
+     * -DgroupId=org.jetbrains.teamcity -DartifactId=web -Dversion=10.0.3 -Dpackaging=jar
      */
     provided "org.jetbrains.teamcity:web:${teamcityVersion}"
     provided group: 'com.google.code.gson', name: 'gson', version: '2.4'
@@ -65,8 +65,8 @@ teamcity {
 
         environments {
             teamcity10 {
-                version = '10.0.2'
-                downloadUrl = "https://download.jetbrains.com/teamcity/TeamCity-10.0.2.tar.gz"
+                version = '10.0.3'
+                downloadUrl = "https://download.jetbrains.com/teamcity/TeamCity-10.0.3.tar.gz"
                 homeDir = file("$teamcityDir/TeamCity-${version}")
                 dataDir = file("$teamcityDir/data/${version}")
                 javaHome = file(java8Home)

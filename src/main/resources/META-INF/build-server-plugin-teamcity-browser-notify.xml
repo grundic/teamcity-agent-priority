@@ -38,6 +38,7 @@
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByConfigurationParameter"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByCpuIndex"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByName"/>
+    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByRandom"/>
 
     <!-- Web -->
     <bean class="com.github.grundic.agentPriority.controllers.ProjectConfigurationTab"/>
