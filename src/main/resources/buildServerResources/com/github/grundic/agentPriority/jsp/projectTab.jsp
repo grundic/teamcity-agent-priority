@@ -39,7 +39,7 @@
 
 <div class="section noMargin">
     <h2 class="noBorder">Agent priorities</h2>
-    <bs:smallNote>Available ordering of build agents:<c:forEach items="${availablePriorities}" var="priority"
+    <bs:smallNote>Available ordering of build agents: <c:forEach items="${availablePriorities}" var="priority"
                                                                 varStatus="pos"><c:out value="${priority.name}"/><c:if
             test="${not pos.last}">, </c:if></c:forEach>.</bs:smallNote>
 

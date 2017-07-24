@@ -43,7 +43,7 @@
     <td><label for="historyCoefficient">History coefficient:</label><l:star/></td>
     <td>
         <props:textProperty name="historyCoefficient" className="longField"/>
-        <span class="smallNote">The valued is multiplied with the build index number. Usually this should be negative or zero, so older builds gain less weight.</span>
+        <span class="smallNote">The value is multiplied with the build index number. Usually this should be negative or zero, so older builds gain less weight.</span>
         <span class="error" id="error_historyCoefficient"></span>
     </td>
 </tr>

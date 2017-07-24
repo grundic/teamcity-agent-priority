@@ -27,6 +27,8 @@ on `Add Priority` button and select one of the available prioritizes:
   * By configuration parameter: this priority would sort agents by the given parameter, provided by user. Parameter should be set in buildAgent.properties file;
   * By CPU benchmark index: this priority would sort agents by CPU benchmark index, calculated during agent start;
   * By name: this priority would sort agents by name;
+  * By idle time: this priority sorts agents by idle time;
+  * By random: this priority sorts agents randomly;
   
 Each priority could have some parameters, which are described on the corresponding configuration page.
 Multiple priorities could be selected and reordered.

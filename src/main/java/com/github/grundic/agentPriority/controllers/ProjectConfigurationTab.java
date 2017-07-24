@@ -91,7 +91,7 @@ public class ProjectConfigurationTab extends EditProjectTab {
             }
 
             if (count > 0) {
-                tabTitle += String.format("(%d)", count);
+                tabTitle += String.format(" (%d)", count);
             }
         }
 
