@@ -40,6 +40,7 @@
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByName"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByRandom"/>
     <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByIdleTime"/>
+    <bean class="com.github.grundic.agentPriority.prioritisation.impl.ByPool"/>
 
     <!-- Web -->
     <bean class="com.github.grundic.agentPriority.controllers.ProjectConfigurationTab"/>
